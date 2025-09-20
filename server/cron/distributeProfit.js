@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const Purchase = require("../models/Purchase");
+const Purchase = require("../models/purchase");
 const User = require("../models/User");
 
 const job = cron.schedule('0 0 * * *', async () => {

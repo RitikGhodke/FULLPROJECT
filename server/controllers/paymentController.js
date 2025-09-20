@@ -29,7 +29,9 @@
 
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
-const Purchase = require("../models/Purchase");
+// const Purchase = require("./models/Purchase");
+const Purchase = require("../models/purchase");
+
 const User = require("../models/User");
 
 const razorpay = new Razorpay({

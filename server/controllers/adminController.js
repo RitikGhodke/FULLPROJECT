@@ -1,4 +1,6 @@
-const Purchase = require("../models/Purchase");
+// const Purchase = require("./models/Purchase");
+const Purchase = require("../models/purchase");
+
 const User = require("../models/User");
 
 // manual run distribution (for testing)
