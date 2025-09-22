@@ -168,11 +168,85 @@
 
 //after deploy
 
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+// import React, { useState } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+// const API_BASE = import.meta.env.VITE_API_BASE;
+
+// export default function AuthPage() {
+//   const [isLogin, setIsLogin] = useState(true);
+//   const [name, setName] = useState("");
+//   const [phone, setPhone] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   const submit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     try {
+//       if (isLogin) {
+//         const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
+//         localStorage.setItem("token", res.data.token);
+//         localStorage.setItem("name", res.data.user?.name || "");
+//         localStorage.setItem("email", res.data.user?.email || "");
+//         navigate("/");
+//       } else {
+//         const res = await axios.post(`${API_BASE}/api/auth/register`, { name, email, phone, password });
+//         localStorage.setItem("token", res.data.token);
+//         localStorage.setItem("name", res.data.user?.name || "");
+//         localStorage.setItem("email", res.data.user?.email || "");
+//         navigate("/");
+//       }
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div style={{ maxWidth: 460, margin: "40px auto", padding: 18, background: "#fff", borderRadius: 8 }}>
+//       <h2 style={{ textAlign: "center" }}>{isLogin ? "Login" : "Create account"}</h2>
+//       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+//         {!isLogin && (
+//           <>
+//             <input placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required style={input} />
+//             <input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required style={input} />
+//           </>
+//         )}
+//         <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required style={input} />
+//         <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={input} />
+//         <button type="submit" disabled={loading} style={btn}>{loading ? "Please wait..." : (isLogin ? "Login" : "Register")}</button>
+//       </form>
+//       <p style={{ textAlign: "center", marginTop: 12 }}>
+//         {isLogin ? "New here?" : "Already registered?"}
+//         <button onClick={() => setIsLogin(!isLogin)} style={{ marginLeft: 8, background: "none", border: "none", color: "var(--primary)", cursor: "pointer" }}>
+//           {isLogin ? "Create account" : "Login"}
+//         </button>
+//       </p>
+//     </div>
+//   );
+// }
+
+// const input = { padding: 10, borderRadius: 6, border: "1px solid #e5e7eb", width: "100%" };
+// const btn = { padding: 10, borderRadius: 6, border: "none", background: "var(--primary)", color: "#fff", fontWeight: 600 };
+
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_BASE = "https://fullproject-9.onrender.com";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -202,30 +276,24 @@ export default function AuthPage() {
       }
     } catch (err) {
       alert(err.response?.data?.message || "Error");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div style={{ maxWidth: 460, margin: "40px auto", padding: 18, background: "#fff", borderRadius: 8 }}>
+    <div style={{ maxWidth: 460, margin: "40px auto", padding: 18, background: "#fff", borderRadius: 8, boxShadow: "0 6px 20px rgba(2,6,23,0.06)" }}>
       <h2 style={{ textAlign: "center" }}>{isLogin ? "Login" : "Create account"}</h2>
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
-        {!isLogin && (
-          <>
-            <input placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required style={input} />
-            <input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required style={input} />
-          </>
-        )}
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required style={input} />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={input} />
+        {!isLogin && <>
+          <input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} required style={input} />
+          <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required style={input} />
+        </>}
+        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required style={input} />
+        <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required style={input} />
         <button type="submit" disabled={loading} style={btn}>{loading ? "Please wait..." : (isLogin ? "Login" : "Register")}</button>
       </form>
       <p style={{ textAlign: "center", marginTop: 12 }}>
         {isLogin ? "New here?" : "Already registered?"}
-        <button onClick={() => setIsLogin(!isLogin)} style={{ marginLeft: 8, background: "none", border: "none", color: "var(--primary)", cursor: "pointer" }}>
-          {isLogin ? "Create account" : "Login"}
-        </button>
+        <button onClick={() => setIsLogin(!isLogin)} style={{ marginLeft: 8, background: "none", border: "none", color: "var(--primary)", cursor: "pointer" }}>{isLogin ? "Create account" : "Login"}</button>
       </p>
     </div>
   );

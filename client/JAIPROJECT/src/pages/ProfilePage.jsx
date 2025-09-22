@@ -165,7 +165,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = "https://fullproject-9.onrender.com";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -234,3 +234,15 @@ export default function ProfilePage() {
 }
 
 const input = { padding: 10, borderRadius: 6, border: "1px solid #e6e9ef", width: "100%" };
+
+
+
+
+
+
+
+
+
+
+
+
