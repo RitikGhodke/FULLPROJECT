@@ -148,30 +148,82 @@
 
 // server.js
 
+// const express = require("express");
+// const mongoose = require("mongoose");
+// require("dotenv").config();
+
+// const app = express();
+// app.use(express.json());
+
+// // routes import karo
+// const paymentRoutes = require("./routes/payment");
+// // example: app.use("/api/payment", paymentRoutes);
+
+// app.use("/api/payment", paymentRoutes);
+
+// // MongoDB connect
+// const mongoURI = process.env.MONGO_URI;
+// if (!mongoURI) {
+//   console.error("Error: MONGO_URI is not defined in environment variables.");
+//   process.exit(1); // stop server if no URI
+// }
+
+// mongoose
+//   .connect(mongoURI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch((err) => {
+//     console.error("MongoDB connection error:", err);
+//     process.exit(1);
+//   });
+
+// // PORT setup
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+// server.js
+
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
 
-// routes import karo
+// CORS setup
+app.use(cors({
+  origin: "https://fullproject-two.vercel.app", // yaha tumhara frontend URL
+  credentials: true
+}));
+
+// Routes import
 const paymentRoutes = require("./routes/payment");
-// example: app.use("/api/payment", paymentRoutes);
-
+const authRoutes = require("./routes/auth"); // agar auth route alag hai
 app.use("/api/payment", paymentRoutes);
+app.use("/api/auth", authRoutes); // agar auth endpoints backend me hain
 
-// MongoDB connect
+// MongoDB connection
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
   console.error("Error: MONGO_URI is not defined in environment variables.");
-  process.exit(1); // stop server if no URI
+  process.exit(1);
 }
 
 mongoose
   .connect(mongoURI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   })
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => {
