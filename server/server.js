@@ -118,24 +118,69 @@
 
 
 
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const dotenv = require("dotenv");
+// const paymentRoutes = require("./routes/payment");
+// const authMiddleware = require("./middleware/auth");
+
+// dotenv.config();
+// const app = express();
+// app.use(express.json());
+
+// // Connect to MongoDB
+// mongoose.connect(process.env.MONGO_URI)
+//     .then(() => console.log("✅ MongoDB connected"))
+//     .catch(err => console.error(err));
+
+// // Routes
+// app.use("/api/payment", authMiddleware, paymentRoutes);
+
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+
+
+// server.js
+
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const paymentRoutes = require("./routes/payment");
-const authMiddleware = require("./middleware/auth");
+require("dotenv").config();
 
-dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB connected"))
-    .catch(err => console.error(err));
+// routes import karo
+const paymentRoutes = require("./routes/payment");
+// example: app.use("/api/payment", paymentRoutes);
 
-// Routes
-app.use("/api/payment", authMiddleware, paymentRoutes);
+app.use("/api/payment", paymentRoutes);
 
+// MongoDB connect
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+  console.error("Error: MONGO_URI is not defined in environment variables.");
+  process.exit(1); // stop server if no URI
+}
+
+mongoose
+  .connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
+
+// PORT setup
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
