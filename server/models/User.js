@@ -13,14 +13,31 @@
 
 
 
+// const mongoose = require("mongoose");
+
+// const userSchema = new mongoose.Schema({
+//   name: { type: String },
+//   email: { type: String, required: true, unique: true },
+//   phone: { type: String },
+//   password: { type: String, required: true },
+//   avatar: { type: String, default: "" },
+//   walletBalance: { type: Number, default: 0 }
+// }, { timestamps: true });
+
+// module.exports = mongoose.model("User", userSchema);
+
+
+
+
+
+
+
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  name: { type: String },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String },
-  password: { type: String, required: true },
-  avatar: { type: String, default: "" },
+  name: String,
+  email: String,
+  password: String,
   walletBalance: { type: Number, default: 0 }
 }, { timestamps: true });
 
