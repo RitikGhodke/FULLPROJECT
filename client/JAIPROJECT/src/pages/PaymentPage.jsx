@@ -71,7 +71,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://fullproject-9.onrender.com";
 const RZP_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 const PRODUCTS = {

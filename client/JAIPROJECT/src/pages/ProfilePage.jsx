@@ -29,7 +29,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://fullproject-9.onrender.com";
 
 export default function ProfilePage(){
   const [user, setUser] = useState(null);
@@ -125,7 +125,7 @@ function UserPurchases({ userId }){
   useEffect(()=> {
     (async ()=>{
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE || "http://localhost:5000"}/api/payment/wallet`, { headers });
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE || "https://fullproject-9.onrender.com"}/api/payment/wallet`, { headers });
         setPurchases(res.data.purchases || []);
       } catch (err) { console.error(err); }
     })();
