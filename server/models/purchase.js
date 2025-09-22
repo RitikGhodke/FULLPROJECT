@@ -41,3 +41,19 @@ const purchaseSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model("Purchase", purchaseSchema);
+
+
+
+
+// const mongoose = require("mongoose");
+
+// const purchaseSchema = new mongoose.Schema({
+//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+//   amount: { type: Number, required: true },
+//   paymentId: { type: String },  // Razorpay payment ID
+//   orderId: { type: String },    // Razorpay order ID
+//   status: { type: String, default: "pending" }, // pending / success / failed
+//   createdAt: { type: Date, default: Date.now }
+// });
+
+// module.exports = mongoose.model("Purchase", purchaseSchema);

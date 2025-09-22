@@ -58,12 +58,30 @@
 
 
 
+// const express = require("express");
+// const router = express.Router();
+// const paymentController = require("../controllers/paymentController");
+
+// router.post("/create-order", paymentController.createOrder);
+// router.post("/verify-payment", paymentController.verifyPayment);
+// router.get("/wallet", paymentController.getWallet);
+
+// module.exports = router;
+
+
+
+
+
+
+
+
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth"); // JWT middleware
 const paymentController = require("../controllers/paymentController");
 
-router.post("/create-order", paymentController.createOrder);
-router.post("/verify-payment", paymentController.verifyPayment);
-router.get("/wallet", paymentController.getWallet);
+router.post("/create-order", auth, paymentController.createOrder);
+router.post("/verify-payment", auth, paymentController.verifyPayment);
+router.get("/wallet", auth, paymentController.getWallet);
 
 module.exports = router;
