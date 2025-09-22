@@ -193,6 +193,63 @@
 
 // server.js
 
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// require("dotenv").config();
+
+// const app = express();
+// app.use(express.json());
+
+// // CORS setup
+// app.use(cors({
+//   origin: "https://fullproject-two.vercel.app", // yaha tumhara frontend URL
+//   credentials: true
+// }));
+
+// // Routes import
+// const paymentRoutes = require("./routes/payment");
+// const authRoutes = require("./routes/auth"); // agar auth route alag hai
+// app.use("/api/payment", paymentRoutes);
+// app.use("/api/auth", authRoutes); // agar auth endpoints backend me hain
+
+// // MongoDB connection
+// const mongoURI = process.env.MONGO_URI;
+// if (!mongoURI) {
+//   console.error("Error: MONGO_URI is not defined in environment variables.");
+//   process.exit(1);
+// }
+
+// mongoose
+//   .connect(mongoURI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//   })
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch((err) => {
+//     console.error("MongoDB connection error:", err);
+//     process.exit(1);
+//   });
+
+// // PORT setup
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+
+
+
+
+//after deploy
+
+// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -203,36 +260,33 @@ app.use(express.json());
 
 // CORS setup
 app.use(cors({
-  origin: "https://fullproject-two.vercel.app", // yaha tumhara frontend URL
+  origin: "https://fullproject-two.vercel.app", // frontend URL
   credentials: true
 }));
 
-// Routes import
+// Routes
 const paymentRoutes = require("./routes/payment");
-const authRoutes = require("./routes/auth"); // agar auth route alag hai
+const authRoutes = require("./routes/auth"); // agar alag auth routes hai
 app.use("/api/payment", paymentRoutes);
-app.use("/api/auth", authRoutes); // agar auth endpoints backend me hain
+app.use("/api/auth", authRoutes);
 
-// MongoDB connection
+// MongoDB connect
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
   console.error("Error: MONGO_URI is not defined in environment variables.");
   process.exit(1);
 }
 
-mongoose
-  .connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-// PORT setup
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch(err => {
+  console.error("MongoDB connection error:", err);
+  process.exit(1);
 });
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
