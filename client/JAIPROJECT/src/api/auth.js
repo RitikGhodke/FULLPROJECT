@@ -41,23 +41,26 @@
 
 
 
+
+
+
 import axios from "axios";
 
-// Backend ka base URL (jo Render pe deployed hai)
-const API_BASE = "https://fullproject-9.onrender.com/api/auth";
+// Backend ka base URL
+const API_URL = "https://fullproject-9.onrender.com/api/auth";
 
 // Axios instance
 const API = axios.create({
-  baseURL: API_BASE,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor: automatically attach token if available
+// Add token automatically to requests if present
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // user token
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -78,9 +81,8 @@ export const login = async (data) => {
   return res.data;
 };
 
-// Get current logged-in user
-export const getCurrentUser = async () => {
+// Get user profile (example)
+export const getProfile = async () => {
   const res = await API.get("/me");
   return res.data;
 };
-

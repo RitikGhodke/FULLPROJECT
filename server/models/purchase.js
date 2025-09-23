@@ -63,35 +63,74 @@
 
 
 
+// import mongoose from "mongoose";
+
+// const purchaseSchema = new mongoose.Schema(
+//   {
+//     user: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true,
+//     },
+//     razorpayOrderId: {
+//       type: String,
+//       required: true,
+//     },
+//     razorpayPaymentId: {
+//       type: String,
+//     },
+//     amount: {
+//       type: Number,
+//       required: true,
+//     },
+//     status: {
+//       type: String,
+//       enum: ["created", "paid", "failed"],
+//       default: "created",
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// const Purchase = mongoose.model("Purchase", purchaseSchema);
+// export default Purchase;
+
+
+
+
+
+
+
+//final deploy
+
 import mongoose from "mongoose";
 
 const purchaseSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // User collection se reference
       required: true,
     },
     razorpayOrderId: {
       type: String,
-      required: true,
+      required: true, // order create hone par mandatory
     },
     razorpayPaymentId: {
-      type: String,
+      type: String, // payment complete hone par fill hoga
     },
     amount: {
       type: Number,
-      required: true,
+      required: true, // payment amount
     },
     status: {
       type: String,
-      enum: ["created", "paid", "failed"],
+      enum: ["created", "paid", "failed"], // order ka status
       default: "created",
     },
   },
-  { timestamps: true }
+  { timestamps: true } // createdAt aur updatedAt automatically add hote hain
 );
 
 const Purchase = mongoose.model("Purchase", purchaseSchema);
 export default Purchase;
-

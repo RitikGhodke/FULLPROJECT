@@ -51,3 +51,8 @@ router.post("/avatar", verifyToken, upload.single("avatar"), async (req, res) =>
 });
 
 export default router;
+
+
+
+
+

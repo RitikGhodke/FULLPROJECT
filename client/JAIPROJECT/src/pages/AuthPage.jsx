@@ -455,3 +455,13 @@ export default function AuthPage() {
 }
 const input = { padding:10, borderRadius:6, border:"1px solid #e5e7eb", width:"100%" };
 const btn = { padding:10, borderRadius:6, border:"none", background:"var(--primary)", color:"#fff", fontWeight:600 };
+
+
+
+
+
+
+
+
+
+
