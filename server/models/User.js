@@ -47,14 +47,29 @@
 
 
 //after deploy5
+// import mongoose from "mongoose";
+
+// const userSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   email: { type: String, required: true, unique: true },
+//   phone: { type: String },
+//   password: { type: String, required: true },
+//   wallet: { type: Number, default: 0 }
+// }, { timestamps: true });
+
+// export default mongoose.model("User", userSchema);
+
+
+
+
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String },
-  password: { type: String, required: true },
-  wallet: { type: Number, default: 0 }
-}, { timestamps: true });
+  name: String,
+  email: String,
+  phone: String,
+  password: String,
+  avatar: String
+});
 
 export default mongoose.model("User", userSchema);
