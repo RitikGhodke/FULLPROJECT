@@ -31,14 +31,30 @@
 
 
 
+// const mongoose = require("mongoose");
 
-const mongoose = require("mongoose");
+// const userSchema = new mongoose.Schema({
+//   name: String,
+//   email: String,
+//   password: String,
+//   walletBalance: { type: Number, default: 0 }
+// }, { timestamps: true });
+
+// module.exports = mongoose.model("User", userSchema);
+
+
+
+
+
+//after deploy5
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  walletBalance: { type: Number, default: 0 }
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String },
+  password: { type: String, required: true },
+  wallet: { type: Number, default: 0 }
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema);

@@ -419,134 +419,166 @@
 
 
 
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const multer = require("multer");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const path = require("path");
+// require("dotenv").config();
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// const multer = require("multer");
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const path = require("path");
 
+// const app = express();
+// app.use(express.json());
+
+// // CORS - allow frontend
+// app.use(cors({
+//   origin: ["https://fullproject-two.vercel.app"], // tumhare Vercel frontend URL
+//   credentials: true,
+// }));
+
+// // Multer setup for file uploads
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, "uploads/"),
+//   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
+// });
+// const upload = multer({ storage });
+
+// // MongoDB connect
+// mongoose.connect(process.env.MONGO_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// })
+// .then(() => console.log("✅ MongoDB connected"))
+// .catch((err) => console.error("MongoDB connection error:", err));
+
+// // User schema
+// const userSchema = new mongoose.Schema({
+//   name: String,
+//   email: { type: String, unique: true },
+//   phone: String,
+//   password: String,
+//   avatar: String,
+//   walletBalance: { type: Number, default: 0 },
+// });
+
+// const User = mongoose.model("User", userSchema);
+
+// // Middleware to verify JWT
+// const authMiddleware = async (req, res, next) => {
+//   const token = req.headers.authorization?.split(" ")[1];
+//   if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = await User.findById(decoded.id);
+//     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+//     next();
+//   } catch (err) {
+//     res.status(401).json({ message: "Invalid token" });
+//   }
+// };
+
+// // ===== AUTH ROUTES =====
+
+// // Register
+// app.post("/api/auth/register", async (req, res) => {
+//   const { name, email, phone, password } = req.body;
+//   try {
+//     const hashed = await bcrypt.hash(password, 10);
+//     const user = await User.create({ name, email, phone, password: hashed });
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+//     res.json({ user, token });
+//   } catch (err) {
+//     res.status(400).json({ message: err.message });
+//   }
+// });
+
+// // Login
+// app.post("/api/auth/login", async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(400).json({ message: "User not found" });
+
+//     const match = await bcrypt.compare(password, user.password);
+//     if (!match) return res.status(400).json({ message: "Invalid password" });
+
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+//     res.json({ user, token });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
+// // Get current user
+// app.get("/api/auth/me", authMiddleware, async (req, res) => {
+//   res.json(req.user);
+// });
+
+// // ===== PROFILE ROUTES =====
+
+// // Update profile
+// app.put("/api/profile/update", authMiddleware, async (req, res) => {
+//   const { name, phone } = req.body;
+//   req.user.name = name;
+//   req.user.phone = phone;
+//   await req.user.save();
+//   res.json({ message: "Profile updated" });
+// });
+
+// // Upload avatar
+// app.post("/api/profile/avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
+//   if (!req.file) return res.status(400).json({ message: "File missing" });
+//   req.user.avatar = `/uploads/${req.file.filename}`;
+//   await req.user.save();
+//   res.json({ message: "Avatar uploaded", avatar: req.user.avatar });
+// });
+
+// // ===== PAYMENT ROUTES (placeholder) =====
+// app.post("/api/payment/create-order", authMiddleware, (req, res) => {
+//   res.json({ message: "Order creation route - integrate Razorpay here" });
+// });
+
+// app.post("/api/payment/verify-payment", authMiddleware, (req, res) => {
+//   res.json({ message: "Payment verification route - integrate Razorpay here" });
+// });
+
+// // ===== STATIC FILES =====
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import mongoose from "mongoose";
+import authRoutes from "./routes/auth.js";
+import paymentRoutes from "./routes/payment.js";
+
+dotenv.config();
 const app = express();
+
+// Middlewares
+app.use(cors({ origin: process.env.FRONTEND_URL || "*" })); // Frontend URL
 app.use(express.json());
 
-// CORS - allow frontend
-app.use(cors({
-  origin: ["https://fullproject-two.vercel.app"], // tumhare Vercel frontend URL
-  credentials: true,
-}));
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/payment", paymentRoutes);
 
-// Multer setup for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({ storage });
+// DB connection
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("DB connection failed:", err));
 
-// MongoDB connect
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB connected"))
-.catch((err) => console.error("MongoDB connection error:", err));
-
-// User schema
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  phone: String,
-  password: String,
-  avatar: String,
-  walletBalance: { type: Number, default: 0 },
-});
-
-const User = mongoose.model("User", userSchema);
-
-// Middleware to verify JWT
-const authMiddleware = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id);
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    next();
-  } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
-  }
-};
-
-// ===== AUTH ROUTES =====
-
-// Register
-app.post("/api/auth/register", async (req, res) => {
-  const { name, email, phone, password } = req.body;
-  try {
-    const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, phone, password: hashed });
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ user, token });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// Login
-app.post("/api/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ message: "Invalid password" });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ user, token });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Get current user
-app.get("/api/auth/me", authMiddleware, async (req, res) => {
-  res.json(req.user);
-});
-
-// ===== PROFILE ROUTES =====
-
-// Update profile
-app.put("/api/profile/update", authMiddleware, async (req, res) => {
-  const { name, phone } = req.body;
-  req.user.name = name;
-  req.user.phone = phone;
-  await req.user.save();
-  res.json({ message: "Profile updated" });
-});
-
-// Upload avatar
-app.post("/api/profile/avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
-  if (!req.file) return res.status(400).json({ message: "File missing" });
-  req.user.avatar = `/uploads/${req.file.filename}`;
-  await req.user.save();
-  res.json({ message: "Avatar uploaded", avatar: req.user.avatar });
-});
-
-// ===== PAYMENT ROUTES (placeholder) =====
-app.post("/api/payment/create-order", authMiddleware, (req, res) => {
-  res.json({ message: "Order creation route - integrate Razorpay here" });
-});
-
-app.post("/api/payment/verify-payment", authMiddleware, (req, res) => {
-  res.json({ message: "Payment verification route - integrate Razorpay here" });
-});
-
-// ===== STATIC FILES =====
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
