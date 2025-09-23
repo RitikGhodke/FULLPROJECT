@@ -580,7 +580,7 @@
 
 // server/controllers/paymentController.js
 const Razorpay = require("razorpay");
-const Purchase = require("../models/Purchase");
+const Purchase = require("./models/Purchase");
 const crypto = require("crypto");
 const User = require("../models/User");
 

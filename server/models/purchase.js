@@ -23,24 +23,24 @@
 
 
 
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
-const purchaseSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  productId: Number,
-  productName: String,
-  amount: Number,
-  startDate: Date,
-  expiryDate: Date,
-  totalProfit: Number,
-  dailyProfit: Number,
-  remainingDays: Number,
-  active: Boolean,
-  razorpayOrderId: String,
-  razorpayPaymentId: String
-}, { timestamps: true });
+// const purchaseSchema = new mongoose.Schema({
+//   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+//   productId: Number,
+//   productName: String,
+//   amount: Number,
+//   startDate: Date,
+//   expiryDate: Date,
+//   totalProfit: Number,
+//   dailyProfit: Number,
+//   remainingDays: Number,
+//   active: Boolean,
+//   razorpayOrderId: String,
+//   razorpayPaymentId: String
+// }, { timestamps: true });
 
-module.exports = mongoose.model("Purchase", purchaseSchema);
+// module.exports = mongoose.model("Purchase", purchaseSchema);
 
 
 
@@ -57,3 +57,41 @@ module.exports = mongoose.model("Purchase", purchaseSchema);
 // });
 
 // module.exports = mongoose.model("Purchase", purchaseSchema);
+
+
+
+
+
+
+import mongoose from "mongoose";
+
+const purchaseSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    razorpayOrderId: {
+      type: String,
+      required: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["created", "paid", "failed"],
+      default: "created",
+    },
+  },
+  { timestamps: true }
+);
+
+const Purchase = mongoose.model("Purchase", purchaseSchema);
+export default Purchase;
+

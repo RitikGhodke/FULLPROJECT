@@ -554,24 +554,195 @@
 
 
 
+// import express from "express";
+// import cors from "cors";
+// import mongoose from "mongoose";
+// import dotenv from "dotenv";
+// import paymentRoutes from "./routes/payment.js";
+// import authRoutes from "./routes/auth.js";
+
+// dotenv.config();
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch(err => console.error("MongoDB connection error:", err));
+
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+// import express from 'express';
+// import dotenv from 'dotenv';
+// import cors from 'cors';
+// import mongoose from 'mongoose';
+
+// import authRoutes from './routes/auth.js';
+// import paymentRoutes from './routes/payment.js';
+
+// dotenv.config();
+
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+
+// // Routes
+// app.use('/api/auth', authRoutes);
+// app.use('/api/payment', paymentRoutes);
+
+// const PORT = process.env.PORT || 5000;
+
+// // MongoDB connect
+// mongoose.connect(process.env.MONGO_URI)
+//     .then(() => console.log('MongoDB connected'))
+//     .catch(err => console.error(err));
+
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+// server.js
+// import express from "express";
+// import dotenv from "dotenv";
+// import cors from "cors";
+// import mongoose from "mongoose";
+// import authRoutes from "./routes/auth.js";
+// import paymentRoutes from "./routes/payment.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Routes
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+
+// // MongoDB connection
+// const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/mern-auth";
+// mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch((err) => console.log("❌ MongoDB connection error:", err));
+
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+// import dotenv from "dotenv";
+// dotenv.config();  // <-- sabse pehle
+
+
+// // server.js
+// import express from "express";
+// import cors from "cors";
+
+// import mongoose from "mongoose";
+
+// // Routes
+// import authRoutes from "./routes/auth.js";
+// import paymentRoutes from "./routes/payment.js";
+// import profileRoutes from "./routes/profile.js";
+
+// dotenv.config(); // Load .env file
+
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// // Routes
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+// app.use("/api/profile", profileRoutes);
+
+// // Test route
+// app.get("/", (req, res) => {
+//   res.send("Server is running ✅");
+// });
+
+// // MongoDB connection
+// mongoose
+//   .connect(process.env.MONGO_URI, { 
+//       useNewUrlParser: true, 
+//       useUnifiedTopology: true 
+//   })
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch((err) => console.log("❌ MongoDB connection error:", err));
+
+// // Start server
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+
+
+
+
+
+
+
+// server.js
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
-import paymentRoutes from "./routes/payment.js";
-import authRoutes from "./routes/auth.js";
+import mongoose from "mongoose";
 
-dotenv.config();
+// Routes import
+import authRoutes from "./routes/auth.js";
+import paymentRoutes from "./routes/payment.js";
+
+dotenv.config(); // load .env file
+
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
-
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.get("/", (req, res) => {
+  res.send("✅ Server is running...");
+});
+
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB error:", err));
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+

@@ -1,5 +1,5 @@
 // const Purchase = require("./models/Purchase");
-const Purchase = require("../models/purchase");
+const Purchase = require("./models/purchase");
 
 const User = require("../models/User");
 
