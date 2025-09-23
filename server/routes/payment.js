@@ -272,98 +272,161 @@
 
 
 
+// import express from "express";
+// import Razorpay from "razorpay";
+// import crypto from "crypto";
+// import dotenv from "dotenv";
+// import authMiddleware from "./authMiddleware.js"; // <-- make sure ye file exist karti ho
+// import Purchase from "../models/Purchase.js";
+// import User from "../models/User.js";
+
+// dotenv.config();
+
+// const router = express.Router();
+
+// // Razorpay instance
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY_ID,
+//   key_secret: process.env.RAZORPAY_KEY_SECRET,
+// });
+
+// // Debugging - check env keys
+// if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+//   console.error("❌ Razorpay keys missing. Check .env file!");
+// }
+
+// // Example products
+// const PRODUCTS = [
+//   { id: 1, name: "AI Robot 1", amount: 100, validityDays: 2, totalProfit: 30, dailyProfit: 15 },
+//   { id: 2, name: "AI Robot 2", amount: 500, validityDays: 5, totalProfit: 125, dailyProfit: 25 },
+// ];
+
+// // ✅ Create Razorpay Order
+// router.post("/create-order", authMiddleware, async (req, res) => {
+//   try {
+//     const { productId } = req.body;
+//     const product = PRODUCTS.find((p) => p.id === Number(productId));
+//     if (!product) return res.status(400).json({ message: "Invalid product" });
+
+//     const options = {
+//       amount: product.amount * 100, // amount in paise
+//       currency: "INR",
+//       receipt: `order_rcpt_${Date.now()}`,
+//     };
+
+//     const order = await razorpay.orders.create(options);
+//     return res.json({ order, product });
+//   } catch (err) {
+//     console.error("createOrder error:", err);
+//     return res.status(500).json({ message: "Order creation failed" });
+//   }
+// });
+
+// // ✅ Verify Razorpay Payment
+// router.post("/verify-payment", authMiddleware, async (req, res) => {
+//   try {
+//     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, productId } = req.body;
+
+//     const generated_signature = crypto
+//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+//       .update(razorpay_order_id + "|" + razorpay_payment_id)
+//       .digest("hex");
+
+//     if (generated_signature !== razorpay_signature) {
+//       return res.status(400).json({ message: "Invalid signature" });
+//     }
+
+//     const product = PRODUCTS.find((p) => p.id === Number(productId));
+//     if (!product) return res.status(400).json({ message: "Invalid product" });
+
+//     const user = await User.findById(req.user._id);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const startDate = new Date();
+//     const expiryDate = new Date(startDate.getTime() + product.validityDays * 24 * 60 * 60 * 1000);
+
+//     const purchase = await Purchase.create({
+//       user: user._id,
+//       productId: product.id,
+//       productName: product.name,
+//       amount: product.amount,
+//       startDate,
+//       expiryDate,
+//       totalProfit: product.totalProfit,
+//       dailyProfit: product.dailyProfit,
+//       remainingDays: product.validityDays,
+//       active: true,
+//       razorpayOrderId: razorpay_order_id,
+//       razorpayPaymentId: razorpay_payment_id,
+//     });
+
+//     return res.json({ success: true, purchase });
+//   } catch (err) {
+//     console.error("verifyPayment error:", err);
+//     return res.status(500).json({ message: "Payment verification failed" });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
 import express from "express";
 import Razorpay from "razorpay";
-import crypto from "crypto";
 import dotenv from "dotenv";
-import authMiddleware from "./authMiddleware.js"; // <-- make sure ye file exist karti ho
-import Purchase from "../models/Purchase.js";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 dotenv.config();
 
 const router = express.Router();
 
-// Razorpay instance
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Debugging - check env keys
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-  console.error("❌ Razorpay keys missing. Check .env file!");
-}
-
-// Example products
-const PRODUCTS = [
-  { id: 1, name: "AI Robot 1", amount: 100, validityDays: 2, totalProfit: 30, dailyProfit: 15 },
-  { id: 2, name: "AI Robot 2", amount: 500, validityDays: 5, totalProfit: 125, dailyProfit: 25 },
-];
-
-// ✅ Create Razorpay Order
-router.post("/create-order", authMiddleware, async (req, res) => {
+// Auth middleware
+const authMiddleware = async (req, res, next) => {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ message: "Unauthorized" });
+  const token = auth.split(" ")[1];
   try {
-    const { productId } = req.body;
-    const product = PRODUCTS.find((p) => p.id === Number(productId));
-    if (!product) return res.status(400).json({ message: "Invalid product" });
-
-    const options = {
-      amount: product.amount * 100, // amount in paise
-      currency: "INR",
-      receipt: `order_rcpt_${Date.now()}`,
-    };
-
-    const order = await razorpay.orders.create(options);
-    return res.json({ order, product });
-  } catch (err) {
-    console.error("createOrder error:", err);
-    return res.status(500).json({ message: "Order creation failed" });
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(payload.id);
+    next();
+  } catch {
+    res.status(401).json({ message: "Unauthorized" });
   }
-});
+};
 
-// ✅ Verify Razorpay Payment
-router.post("/verify-payment", authMiddleware, async (req, res) => {
+// Create order
+router.post("/create-order", authMiddleware, async (req, res) => {
+  const { productId } = req.body;
+  const products = {
+    1: { name: "AI Robot 1", price: 100 },
+    2: { name: "AI Robot 2", price: 500 },
+  };
+  const product = products[productId];
+  if (!product) return res.status(400).json({ message: "Invalid product" });
+
+  const options = {
+    amount: product.price * 100, // in paise
+    currency: "INR",
+    receipt: `order_rcpt_${Date.now()}`,
+  };
+
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, productId } = req.body;
-
-    const generated_signature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
-
-    if (generated_signature !== razorpay_signature) {
-      return res.status(400).json({ message: "Invalid signature" });
-    }
-
-    const product = PRODUCTS.find((p) => p.id === Number(productId));
-    if (!product) return res.status(400).json({ message: "Invalid product" });
-
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const startDate = new Date();
-    const expiryDate = new Date(startDate.getTime() + product.validityDays * 24 * 60 * 60 * 1000);
-
-    const purchase = await Purchase.create({
-      user: user._id,
-      productId: product.id,
-      productName: product.name,
-      amount: product.amount,
-      startDate,
-      expiryDate,
-      totalProfit: product.totalProfit,
-      dailyProfit: product.dailyProfit,
-      remainingDays: product.validityDays,
-      active: true,
-      razorpayOrderId: razorpay_order_id,
-      razorpayPaymentId: razorpay_payment_id,
-    });
-
-    return res.json({ success: true, purchase });
+    const order = await razorpay.orders.create(options);
+    res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
-    console.error("verifyPayment error:", err);
-    return res.status(500).json({ message: "Payment verification failed" });
+    console.log(err);
+    res.status(500).json({ message: "Order creation failed" });
   }
 });
 

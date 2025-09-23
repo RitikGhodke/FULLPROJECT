@@ -56,6 +56,50 @@
 // });
 
 
+// server.js
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// require("dotenv").config();
+
+// const app = express();
+// app.use(express.json());
+
+// // CORS setup
+// app.use(cors({
+//   origin: "https://fullproject-two.vercel.app", // frontend URL
+//   credentials: true
+// }));
+
+// // Routes
+// const paymentRoutes = require("./routes/payment");
+// const authRoutes = require("./routes/auth"); // agar alag auth routes hai
+// app.use("/api/payment", paymentRoutes);
+// app.use("/api/auth", authRoutes);
+
+// // MongoDB connect
+// const mongoURI = process.env.MONGO_URI;
+// if (!mongoURI) {
+//   console.error("Error: MONGO_URI is not defined in environment variables.");
+//   process.exit(1);
+// }
+
+// mongoose.connect(mongoURI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// })
+// .then(() => console.log("✅ MongoDB connected"))
+// .catch(err => {
+//   console.error("MongoDB connection error:", err);
+//   process.exit(1);
+// });
+
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
 
 // const express = require("express");
 // const mongoose = require("mongoose");
@@ -248,50 +292,6 @@
 
 
 //after deploy
-
-// server.js
-// const express = require("express");
-// const mongoose = require("mongoose");
-// const cors = require("cors");
-// require("dotenv").config();
-
-// const app = express();
-// app.use(express.json());
-
-// // CORS setup
-// app.use(cors({
-//   origin: "https://fullproject-two.vercel.app", // frontend URL
-//   credentials: true
-// }));
-
-// // Routes
-// const paymentRoutes = require("./routes/payment");
-// const authRoutes = require("./routes/auth"); // agar alag auth routes hai
-// app.use("/api/payment", paymentRoutes);
-// app.use("/api/auth", authRoutes);
-
-// // MongoDB connect
-// const mongoURI = process.env.MONGO_URI;
-// if (!mongoURI) {
-//   console.error("Error: MONGO_URI is not defined in environment variables.");
-//   process.exit(1);
-// }
-
-// mongoose.connect(mongoURI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-// .then(() => console.log("✅ MongoDB connected"))
-// .catch(err => {
-//   console.error("MongoDB connection error:", err);
-//   process.exit(1);
-// });
-
-// // Start server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
 
 
 
@@ -704,45 +704,75 @@
 
 
 
-// server.js
+// // server.jsimport express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+
+// // Routes import
+// import authRoutes from "./routes/auth.js";
+// import paymentRoutes from "./routes/payment.js";
+
+// dotenv.config(); // load .env file
+
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+
+// // Middlewares
+// app.use(cors());
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// // Routes
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+
+// app.get("/", (req, res) => {
+//   res.send("✅ Server is running...");
+// });
+
+// // MongoDB Connection
+// mongoose
+//   .connect(process.env.MONGO_URI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch((err) => console.error("❌ MongoDB error:", err));
+
+// // Start Server
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on http://localhost:${PORT}`);
+// });
+
+
+
+
+
+
+
+
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-
-// Routes import
 import authRoutes from "./routes/auth.js";
 import paymentRoutes from "./routes/payment.js";
 
-dotenv.config(); // load .env file
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 
-app.get("/", (req, res) => {
-  res.send("✅ Server is running...");
-});
-
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+const PORT = process.env.PORT || 5000;
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
+  .catch(err => console.log(err));
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
 
