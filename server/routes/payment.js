@@ -376,65 +376,118 @@
 
 
 
+// import express from "express";
+// import Razorpay from "razorpay";
+// import dotenv from "dotenv";
+// import jwt from "jsonwebtoken";
+// import User from "../models/User.js";
+
+// dotenv.config();
+
+// const router = express.Router();
+
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY_ID,
+//   key_secret: process.env.RAZORPAY_KEY_SECRET,
+// });
+
+// // Auth middleware
+// const authMiddleware = async (req, res, next) => {
+//   const auth = req.headers.authorization;
+//   if (!auth) return res.status(401).json({ message: "Unauthorized" });
+//   const token = auth.split(" ")[1];
+//   try {
+//     const payload = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = await User.findById(payload.id);
+//     next();
+//   } catch {
+//     res.status(401).json({ message: "Unauthorized" });
+//   }
+// };
+
+// // Create order
+// router.post("/create-order", authMiddleware, async (req, res) => {
+//   const { productId } = req.body;
+//   const products = {
+//     1: { name: "AI Robot 1", price: 100 },
+//     2: { name: "AI Robot 2", price: 500 },
+//   };
+//   const product = products[productId];
+//   if (!product) return res.status(400).json({ message: "Invalid product" });
+
+//   const options = {
+//     amount: product.price * 100, // in paise
+//     currency: "INR",
+//     receipt: `order_rcpt_${Date.now()}`,
+//   };
+
+//   try {
+//     const order = await razorpay.orders.create(options);
+//     res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ message: "Order creation failed" });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+//final deploymenrt
+
 import express from "express";
 import Razorpay from "razorpay";
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-
-dotenv.config();
+import crypto from "crypto";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+// ✅ Create Razorpay Order
+router.post("/create-order", authMiddleware, async (req, res) => {
+  try {
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+      amount: req.body.amount * 100, // amount in paisa
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: "Payment order creation failed", error });
+  }
 });
 
-// Auth middleware
-const authMiddleware = async (req, res, next) => {
-  const auth = req.headers.authorization;
-  if (!auth) return res.status(401).json({ message: "Unauthorized" });
-  const token = auth.split(" ")[1];
+// ✅ Verify Razorpay Payment
+router.post("/verify-payment", authMiddleware, async (req, res) => {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(payload.id);
-    next();
-  } catch {
-    res.status(401).json({ message: "Unauthorized" });
-  }
-};
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
 
-// Create order
-router.post("/create-order", authMiddleware, async (req, res) => {
-  const { productId } = req.body;
-  const products = {
-    1: { name: "AI Robot 1", price: 100 },
-    2: { name: "AI Robot 2", price: 500 },
-  };
-  const product = products[productId];
-  if (!product) return res.status(400).json({ message: "Invalid product" });
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
 
-  const options = {
-    amount: product.price * 100, // in paise
-    currency: "INR",
-    receipt: `order_rcpt_${Date.now()}`,
-  };
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest("hex");
 
-  try {
-    const order = await razorpay.orders.create(options);
-    res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Order creation failed" });
+    if (expectedSignature === razorpay_signature) {
+      res.json({ success: true, message: "Payment verified successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid signature" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Payment verification failed", error });
   }
 });
 
 export default router;
-
-
-
-
-
-
 

@@ -34,29 +34,54 @@
 
 
 
+// import jwt from "jsonwebtoken";
+// import User from "../models/User.js";
+
+// // middleware to verify JWT token
+// export const verifyToken = async (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+//     const token = authHeader.split(" ")[1];
+//     if (!token) return res.status(401).json({ message: "No token provided" });
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await User.findById(decoded.id).select("-password");
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     req.user = user;
+//     next();
+//   } catch (err) {
+//     console.error("AuthMiddleware error:", err.message);
+//     res.status(401).json({ message: "Unauthorized - Invalid token" });
+//   }
+// };
+
+
+
+
+
+//final deploy
+
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
 
-// middleware to verify JWT token
-export const verifyToken = async (req, res, next) => {
+const authMiddleware = (req, res, next) => {
+  const token = req.header("Authorization")?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ message: "No token provided" });
-
-    const token = authHeader.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided" });
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    req.user = user;
+    req.user = decoded.id;
     next();
-  } catch (err) {
-    console.error("AuthMiddleware error:", err.message);
-    res.status(401).json({ message: "Unauthorized - Invalid token" });
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };
+
+export default authMiddleware;
 
 
 
