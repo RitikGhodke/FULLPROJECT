@@ -752,6 +752,35 @@
 
 
 
+// import express from "express";
+// import mongoose from "mongoose";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import authRoutes from "./routes/auth.js";
+// import paymentRoutes from "./routes/payment.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// app.use(cors());
+// app.use(express.json());
+
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+
+// const PORT = process.env.PORT || 5000;
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log("✅ MongoDB connected"))
+//   .catch(err => console.log(err));
+
+// app.listen(PORT, () => console.log(`🚀 Server running ${PORT}`));
+
+
+
+
+
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -769,16 +798,21 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 
+// ✅ YE NAYA TEST ROUTE ADD KAREN (YAHI PE)
+app.get("/api/test", (req, res) => {
+  res.json({
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID ? "Set" : "Not Set",
+    razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET ? "Set" : "Not Set",
+    nodeEnv: process.env.NODE_ENV,
+    allEnvKeys: Object.keys(process.env).filter(key => 
+      key.includes("RAZOR") || key.includes("razor")
+    )
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.log(err));
 
-app.listen(PORT, () => console.log(` Server running `));
-
-
-
-
-
-
-
+app.listen(PORT, () => console.log(`🚀 Server running ${PORT}`));
