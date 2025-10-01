@@ -64,31 +64,63 @@
 
 //final deploy
 
+// import jwt from "jsonwebtoken";
+
+// const authMiddleware = (req, res, next) => {
+//   const token = req.header("Authorization")?.split(" ")[1];
+//   if (!token) {
+//     return res.status(401).json({ message: "Unauthorized" });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded.id;
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({ message: "Unauthorized" });
+//   }
+// };
+
+// export default authMiddleware;
+
+
+
+
+
+
+
+
+
+
+//final deploy2
+
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
+const authMiddleware = async (req, res, next) => {
   try {
+    const token = req.header("Authorization")?.split(" ")[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id;
+    
+    // ✅ Fetch complete user object from database
+    const user = await User.findById(decoded.id).select("-password");
+    
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    
+    req.user = user; // ✅ Now req.user is complete user object
     next();
+    
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized" });
+    console.error("❌ Auth middleware error:", error.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
 export default authMiddleware;
-
-
-
-
-
-
-
-
-
-
