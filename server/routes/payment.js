@@ -502,6 +502,261 @@
 
 
 
+// import express from "express";
+// import Razorpay from "razorpay";
+// import crypto from "crypto";
+// import authMiddleware from "../middleware/authMiddleware.js";
+
+// const router = express.Router();
+
+// // ❌ REMOVE THIS - Yaha se razorpay instance mat banao
+// // const razorpay = new Razorpay({ ... });
+
+// // ✅ Create Razorpay Order
+// router.post("/create-order", authMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Create order request from user:", req.user._id);
+//     console.log("🔹 Request body:", req.body);
+//     console.log("🔹 Razorpay keys:", {
+//       keyId: process.env.RAZORPAY_KEY_ID ? "Present" : "Missing",
+//       keySecret: process.env.RAZORPAY_KEY_SECRET ? "Present" : "Missing"
+//     });
+
+//     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+//       console.error("❌ Razorpay keys not configured");
+//       return res.status(500).json({ 
+//         message: "Payment service not configured properly" 
+//       });
+//     }
+
+//     // ✅ Razorpay instance yaha banao, jab keys available hain
+//     const razorpay = new Razorpay({
+//       key_id: process.env.RAZORPAY_KEY_ID,
+//       key_secret: process.env.RAZORPAY_KEY_SECRET,
+//     });
+
+//     if (!req.body.amount || req.body.amount <= 0) {
+//       return res.status(400).json({ 
+//         message: "Invalid amount" 
+//       });
+//     }
+
+//     const options = {
+//       amount: req.body.amount * 100, // amount in paisa
+//       currency: "INR",
+//       receipt: `receipt_${Date.now()}`,
+//     };
+
+//     const order = await razorpay.orders.create(options);
+//     console.log("✅ Order created successfully:", order.id);
+    
+//     res.json(order);
+    
+//   } catch (error) {
+//     console.error("❌ Order creation error:", error.message);
+//     console.error("Stack trace:", error.stack);
+//     res.status(500).json({ 
+//       message: "Payment order creation failed", 
+//       error: error.message 
+//     });
+//   }
+// });
+
+// // ✅ Verify Razorpay Payment
+// router.post("/verify-payment", authMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Payment verification request from user:", req.user._id);
+    
+//     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+//     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Missing payment details" 
+//       });
+//     }
+
+//     if (!process.env.RAZORPAY_KEY_SECRET) {
+//       return res.status(500).json({ 
+//         success: false, 
+//         message: "Payment service not configured" 
+//       });
+//     }
+
+//     const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+//     const expectedSignature = crypto
+//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+//       .update(body.toString())
+//       .digest("hex");
+
+//     if (expectedSignature === razorpay_signature) {
+//       console.log("✅ Payment verified successfully");
+//       res.json({ success: true, message: "Payment verified successfully" });
+//     } else {
+//       console.error("❌ Invalid signature");
+//       res.status(400).json({ success: false, message: "Invalid signature" });
+//     }
+//   } catch (error) {
+//     console.error("❌ Payment verification error:", error.message);
+//     res.status(500).json({ 
+//       message: "Payment verification failed", 
+//       error: error.message 
+//     });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+// import express from "express";
+// import Razorpay from "razorpay";
+// import crypto from "crypto";
+// import authMiddleware from "../middleware/authMiddleware.js";
+
+// const router = express.Router();
+
+// // ✅ Product list backend mein
+// const PRODUCTS = [
+//   { id: 1, name: "AI Robot 1", amount: 100 },
+//   { id: 2, name: "AI Robot 2", amount: 500 },
+//   { id: 3, name: "AI Robot 3", amount: 1200 },
+//   { id: 4, name: "AI Robot 4", amount: 2400 },
+//   { id: 5, name: "AI Robot 5", amount: 4980 },
+//   { id: 6, name: "AI Robot 6", amount: 9850 },
+//   { id: 7, name: "AI Robot 7", amount: 15600 },
+//   { id: 8, name: "AI Robot 8", amount: 22450 },
+//   { id: 9, name: "AI Robot 9", amount: 35000 },
+//   { id: 10, name: "AI Robot 10", amount: 55800 }
+// ];
+
+// // ✅ Create Razorpay Order
+// router.post("/create-order", authMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Create order request from user:", req.user._id);
+//     console.log("🔹 Request body:", req.body);
+
+//     const { productId } = req.body;
+
+//     // ✅ Product ID se amount nikalo
+//     const product = PRODUCTS.find(p => p.id === Number(productId));
+    
+//     if (!product) {
+//       console.error("❌ Invalid product ID:", productId);
+//       return res.status(400).json({ 
+//         message: "Invalid product selected" 
+//       });
+//     }
+
+//     console.log("✅ Product found:", product);
+
+//     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+//       console.error("❌ Razorpay keys not configured");
+//       return res.status(500).json({ 
+//         message: "Payment service not configured properly" 
+//       });
+//     }
+
+//     // ✅ Razorpay instance
+//     const razorpay = new Razorpay({
+//       key_id: process.env.RAZORPAY_KEY_ID,
+//       key_secret: process.env.RAZORPAY_KEY_SECRET,
+//     });
+
+//     const options = {
+//       amount: product.amount * 100, // ✅ Product ka amount use karo
+//       currency: "INR",
+//       receipt: `receipt_${Date.now()}`,
+//       notes: {
+//         productId: product.id,
+//         productName: product.name
+//       }
+//     };
+
+//     const order = await razorpay.orders.create(options);
+//     console.log("✅ Order created successfully:", order.id);
+    
+//     res.json({
+//       ...order,
+//       product: product // ✅ Product info bhi bhejo
+//     });
+    
+//   } catch (error) {
+//     console.error("❌ Order creation error:", error.message);
+//     console.error("Stack trace:", error.stack);
+//     res.status(500).json({ 
+//       message: "Payment order creation failed", 
+//       error: error.message 
+//     });
+//   }
+// });
+
+// // ✅ Verify Razorpay Payment
+// router.post("/verify-payment", authMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Payment verification request from user:", req.user._id);
+    
+//     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+//     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Missing payment details" 
+//       });
+//     }
+
+//     if (!process.env.RAZORPAY_KEY_SECRET) {
+//       return res.status(500).json({ 
+//         success: false, 
+//         message: "Payment service not configured" 
+//       });
+//     }
+
+//     const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+//     const expectedSignature = crypto
+//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+//       .update(body.toString())
+//       .digest("hex");
+
+//     if (expectedSignature === razorpay_signature) {
+//       console.log("✅ Payment verified successfully");
+//       res.json({ success: true, message: "Payment verified successfully" });
+//     } else {
+//       console.error("❌ Invalid signature");
+//       res.status(400).json({ success: false, message: "Invalid signature" });
+//     }
+//   } catch (error) {
+//     console.error("❌ Payment verification error:", error.message);
+//     res.status(500).json({ 
+//       message: "Payment verification failed", 
+//       error: error.message 
+//     });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import Razorpay from "razorpay";
 import crypto from "crypto";
@@ -509,8 +764,19 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// ❌ REMOVE THIS - Yaha se razorpay instance mat banao
-// const razorpay = new Razorpay({ ... });
+// ✅ PRODUCTS array yaha define karo
+const PRODUCTS = [
+  { id: 1, name: "AI Robot 1", amount: 100 },
+  { id: 2, name: "AI Robot 2", amount: 500 },
+  { id: 3, name: "AI Robot 3", amount: 1200 },
+  { id: 4, name: "AI Robot 4", amount: 2400 },
+  { id: 5, name: "AI Robot 5", amount: 4980 },
+  { id: 6, name: "AI Robot 6", amount: 9850 },
+  { id: 7, name: "AI Robot 7", amount: 15600 },
+  { id: 8, name: "AI Robot 8", amount: 22450 },
+  { id: 9, name: "AI Robot 9", amount: 35000 },
+  { id: 10, name: "AI Robot 10", amount: 55800 }
+];
 
 // ✅ Create Razorpay Order
 router.post("/create-order", authMiddleware, async (req, res) => {
@@ -522,6 +788,27 @@ router.post("/create-order", authMiddleware, async (req, res) => {
       keySecret: process.env.RAZORPAY_KEY_SECRET ? "Present" : "Missing"
     });
 
+    const { productId } = req.body;
+
+    // ✅ Debug log
+    console.log("🔹 Looking for product ID:", productId, "Type:", typeof productId);
+    console.log("🔹 Available products:", PRODUCTS.length);
+
+    // ✅ Product find karo
+    const product = PRODUCTS.find(p => p.id === Number(productId));
+    
+    if (!product) {
+      console.error("❌ Invalid product ID:", productId);
+      console.error("❌ Available product IDs:", PRODUCTS.map(p => p.id));
+      return res.status(400).json({ 
+        message: "Invalid product selected",
+        productId: productId,
+        availableIds: PRODUCTS.map(p => p.id)
+      });
+    }
+
+    console.log("✅ Product found:", product);
+
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
       console.error("❌ Razorpay keys not configured");
       return res.status(500).json({ 
@@ -529,32 +816,35 @@ router.post("/create-order", authMiddleware, async (req, res) => {
       });
     }
 
-    // ✅ Razorpay instance yaha banao, jab keys available hain
+    // ✅ Razorpay instance
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    if (!req.body.amount || req.body.amount <= 0) {
-      return res.status(400).json({ 
-        message: "Invalid amount" 
-      });
-    }
-
     const options = {
-      amount: req.body.amount * 100, // amount in paisa
+      amount: product.amount * 100,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
+      notes: {
+        productId: product.id,
+        productName: product.name
+      }
     };
+
+    console.log("🔹 Creating Razorpay order with options:", options);
 
     const order = await razorpay.orders.create(options);
     console.log("✅ Order created successfully:", order.id);
     
-    res.json(order);
+    res.json({
+      ...order,
+      product: product
+    });
     
   } catch (error) {
     console.error("❌ Order creation error:", error.message);
-    console.error("Stack trace:", error.stack);
+    console.error("❌ Full error:", error);
     res.status(500).json({ 
       message: "Payment order creation failed", 
       error: error.message 
@@ -566,10 +856,12 @@ router.post("/create-order", authMiddleware, async (req, res) => {
 router.post("/verify-payment", authMiddleware, async (req, res) => {
   try {
     console.log("🔹 Payment verification request from user:", req.user._id);
+    console.log("🔹 Verification body:", req.body);
     
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      console.error("❌ Missing payment details");
       return res.status(400).json({ 
         success: false, 
         message: "Missing payment details" 
@@ -577,6 +869,7 @@ router.post("/verify-payment", authMiddleware, async (req, res) => {
     }
 
     if (!process.env.RAZORPAY_KEY_SECRET) {
+      console.error("❌ Razorpay secret not configured");
       return res.status(500).json({ 
         success: false, 
         message: "Payment service not configured" 
@@ -590,15 +883,19 @@ router.post("/verify-payment", authMiddleware, async (req, res) => {
       .update(body.toString())
       .digest("hex");
 
+    console.log("🔹 Expected signature:", expectedSignature);
+    console.log("🔹 Received signature:", razorpay_signature);
+
     if (expectedSignature === razorpay_signature) {
       console.log("✅ Payment verified successfully");
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
-      console.error("❌ Invalid signature");
+      console.error("❌ Invalid signature - payment verification failed");
       res.status(400).json({ success: false, message: "Invalid signature" });
     }
   } catch (error) {
     console.error("❌ Payment verification error:", error.message);
+    console.error("❌ Full error:", error);
     res.status(500).json({ 
       message: "Payment verification failed", 
       error: error.message 
