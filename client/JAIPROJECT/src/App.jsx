@@ -46,31 +46,63 @@
 
 
 
+// import React from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import Navbar from "./components/Navbar";
+// import HomePage from "./pages/HomePage";
+// import AuthPage from "./pages/AuthPage";
+// import ProfilePage from "./pages/ProfilePage";
+// import PaymentPage from "./pages/PaymentPage";
+// import SuccessPage from "./pages/SuccessPage";
+// import CancelPage from "./pages/CancelPage";
+
+// export default function App() {
+//   return (
+//     <Router>
+//       <Navbar />
+//       <div style={{ minHeight: "calc(100vh - 64px)" }}>
+//         <Routes>
+//           <Route path="/" element={<HomePage />} />
+//           <Route path="/auth" element={<AuthPage />} />
+//           <Route path="/profile" element={<ProfilePage />} />
+//           <Route path="/payment/:id" element={<PaymentPage />} />
+//           <Route path="/success" element={<SuccessPage />} />
+//           <Route path="/cancel" element={<CancelPage />} />
+//         </Routes>
+//       </div>
+//     </Router>
+//   );
+// }
+
+
+
+
+
+//edit
+
+
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
-import AuthPage from "./pages/AuthPage";
-import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
-import SuccessPage from "./pages/SuccessPage";
-import CancelPage from "./pages/CancelPage";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import AdminPanel from "./pages/AdminPanel";
+import AuthPage from "./pages/AuthPage"; // Your login/register page
 
-export default function App() {
+function App() {
   return (
     <Router>
-      <Navbar />
-      <div style={{ minHeight: "calc(100vh - 64px)" }}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/payment/:id" element={<PaymentPage />} />
-          <Route path="/success" element={<SuccessPage />} />
-          <Route path="/cancel" element={<CancelPage />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/payment/:id" element={<PaymentPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
     </Router>
   );
 }
 
+export default App;
