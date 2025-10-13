@@ -825,45 +825,180 @@
 
 
 
+// import express from "express";
+// import mongoose from "mongoose";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import authRoutes from "./routes/auth.js";
+// import paymentRoutes from "./routes/payment.js";
+
+// dotenv.config();
+
+// const app = express();
+
+// app.use(cors());
+// app.use(express.json());
+
+// app.use("/api/auth", authRoutes);
+// app.use("/api/payment", paymentRoutes);
+
+// // ✅ SIMPLE TEST ROUTE (ERROR FREE)
+// app.get("/api/test", (req, res) => {
+//   try {
+//     res.json({
+//       status: "Server is working",
+//       razorpayKeyId: process.env.RAZORPAY_KEY_ID ? "Present" : "Missing",
+//       razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET ? "Present" : "Missing"
+//     });
+//   } catch (error) {
+//     res.json({ error: error.message });
+//   }
+// });
+
+// const PORT = process.env.PORT || 5000;
+
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => {
+//     console.log("✅ MongoDB connected");
+//     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+//   })
+//   .catch(err => {
+//     console.log("MongoDB connection error:", err);
+//     // Server still start even if MongoDB fails
+//     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT} (without DB)`));
+//   });
+
+
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.js";
-import paymentRoutes from "./routes/payment.js";
 
+// 🔥 LOAD ENVIRONMENT VARIABLES FIRST
 dotenv.config();
+
+// Debug environment variables
+console.log('🔧 Environment Variables Check:');
+console.log('   RESEND_API_KEY:', process.env.RESEND_API_KEY ? '✅ Loaded' : '❌ Missing');
+console.log('   PORT:', process.env.PORT || '5000 (default)');
+console.log('   MONGO_URI:', process.env.MONGO_URI ? '✅ Loaded' : '❌ Missing');
+console.log('   RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID ? '✅ Loaded' : '❌ Missing');
+console.log('   FRONTEND_URL:', process.env.FRONTEND_URL || 'Not set');
 
 const app = express();
 
-app.use(cors());
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true
+}));
+
 app.use(express.json());
 
+// Import routes AFTER environment variables are loaded
+import authRoutes from "./routes/auth.js";
+import paymentRoutes from "./routes/payment.js";
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 
-// ✅ SIMPLE TEST ROUTE (ERROR FREE)
+// ✅ HEALTH CHECK ROUTE
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "🚀 MERN Payments Server is running!",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// ✅ TEST ROUTE FOR ENVIRONMENT VARIABLES
 app.get("/api/test", (req, res) => {
-  try {
-    res.json({
-      status: "Server is working",
-      razorpayKeyId: process.env.RAZORPAY_KEY_ID ? "Present" : "Missing",
-      razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET ? "Present" : "Missing"
-    });
-  } catch (error) {
-    res.json({ error: error.message });
-  }
+  res.json({
+    status: "Server is working perfectly! 🎉",
+    environment: process.env.NODE_ENV || 'development',
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID ? "✅ Present" : "❌ Missing",
+    razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET ? "✅ Present" : "❌ Missing",
+    resendApiKey: process.env.RESEND_API_KEY ? "✅ Present" : "❌ Missing",
+    mongoConnected: mongoose.connection.readyState === 1 ? "✅ Connected" : "❌ Disconnected"
+  });
+});
+
+// ✅ 404 HANDLER
+app.use("*", (req, res) => {
+  res.status(404).json({ 
+    error: "Route not found",
+    availableRoutes: [
+      "GET /",
+      "GET /api/test", 
+      "POST /api/auth/register",
+      "POST /api/auth/login",
+      "POST /api/auth/verify-otp",
+      "POST /api/payment/create-order",
+      "POST /api/payment/verify-payment"
+    ]
+  });
+});
+
+// ✅ ERROR HANDLING MIDDLEWARE
+app.use((error, req, res, next) => {
+  console.error("🚨 Server Error:", error);
+  res.status(500).json({ 
+    error: "Internal server error",
+    message: error.message 
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch(err => {
-    console.log("MongoDB connection error:", err);
-    // Server still start even if MongoDB fails
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT} (without DB)`));
-  });
+// ✅ DATABASE CONNECTION WITH BETTER ERROR HANDLING
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not defined in environment variables");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected successfully");
+    
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error.message);
+    console.log("🔄 Continuing without database connection...");
+  }
+};
+
+// ✅ GRACEFUL SERVER STARTUP
+const startServer = async () => {
+  try {
+    // Connect to database first
+    await connectDB();
+    
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`\n🎉 ==========================================`);
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📧 Email Service: ${process.env.RESEND_API_KEY ? '✅ Ready' : '❌ Disabled'}`);
+      console.log(`💳 Payment Service: ${process.env.RAZORPAY_KEY_ID ? '✅ Ready' : '❌ Disabled'}`);
+      console.log(`🗄️  Database: ${mongoose.connection.readyState === 1 ? '✅ Connected' : '❌ Disconnected'}`);
+      console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'Not set'}`);
+      console.log(`🎉 ==========================================\n`);
+    });
+    
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+// ✅ GRACEFUL SHUTDOWN
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down server gracefully...');
+  await mongoose.connection.close();
+  console.log('✅ MongoDB connection closed.');
+  process.exit(0);
+});
+
+// Start the server
+startServer();
