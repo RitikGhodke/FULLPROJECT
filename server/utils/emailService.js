@@ -174,60 +174,137 @@
 
 
 
-import sgMail from "@sendgrid/mail";
+// import sgMail from "@sendgrid/mail";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+// export const sendOTPEmail = async (email, otp) => {
+//   const msg = {
+//     to: email,
+//     from: process.env.SENDGRID_FROM_EMAIL, // Verified sender email
+//     subject: "🔐 Your OTP for Account Verification",
+//     html: `
+//       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
+//         <div style="background: white; padding: 30px; border-radius: 8px;">
+//           <h1 style="color: #667eea; text-align: center; margin-bottom: 20px;">🤖 AI Robots</h1>
+          
+//           <h2 style="color: #1e293b; margin-bottom: 16px;">Verify Your Email</h2>
+          
+//           <p style="color: #64748b; font-size: 16px; line-height: 1.6;">
+//             Thank you for registering! Use the OTP below to complete your registration:
+//           </p>
+          
+//           <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
+//             <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">
+//               ${otp}
+//             </h1>
+//           </div>
+          
+//           <p style="color: #64748b; font-size: 14px;">
+//             This OTP is valid for <strong>10 minutes</strong>.
+//           </p>
+          
+//           <p style="color: #64748b; font-size: 14px;">
+//             If you didn't request this, please ignore this email.
+//           </p>
+          
+//           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+          
+//           <p style="color: #94a3b8; font-size: 12px; text-align: center;">
+//             © 2025 AI Robots Marketplace. All rights reserved.
+//           </p>
+//         </div>
+//       </div>
+//     `,
+//   };
+
+//   try {
+//     await sgMail.send(msg);
+//     console.log(`✅ OTP sent to ${email}`);
+//     return true;
+//   } catch (error) {
+//     console.error("❌ Email send error:", error);
+//     return false;
+//   }
+// };
+
+// export const generateOTP = () => {
+//   return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+
+
+
+
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+
+// ✅ Send OTP Email
 export const sendOTPEmail = async (email, otp) => {
-  const msg = {
-    to: email,
-    from: process.env.SENDGRID_FROM_EMAIL, // Verified sender email
-    subject: "🔐 Your OTP for Account Verification",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
-        <div style="background: white; padding: 30px; border-radius: 8px;">
-          <h1 style="color: #667eea; text-align: center; margin-bottom: 20px;">🤖 AI Robots</h1>
-          
-          <h2 style="color: #1e293b; margin-bottom: 16px;">Verify Your Email</h2>
-          
-          <p style="color: #64748b; font-size: 16px; line-height: 1.6;">
-            Thank you for registering! Use the OTP below to complete your registration:
-          </p>
-          
-          <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
-            <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">
-              ${otp}
-            </h1>
-          </div>
-          
-          <p style="color: #64748b; font-size: 14px;">
-            This OTP is valid for <strong>10 minutes</strong>.
-          </p>
-          
-          <p style="color: #64748b; font-size: 14px;">
-            If you didn't request this, please ignore this email.
-          </p>
-          
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
-          
-          <p style="color: #94a3b8; font-size: 12px; text-align: center;">
-            © 2025 AI Robots Marketplace. All rights reserved.
-          </p>
-        </div>
-      </div>
-    `,
-  };
-
   try {
-    await sgMail.send(msg);
-    console.log(`✅ OTP sent to ${email}`);
+    console.log(`🔹 Attempting to send OTP to: ${email}`);
+    console.log(`🔹 Using Resend API`);
+
+    const { data, error } = await resend.emails.send({
+      from: "AI Robots <onboarding@resend.dev>", // ✅ Free test email (works instantly)
+      to: email,
+      subject: "🔐 Your OTP for Account Verification",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
+          <div style="background: white; padding: 30px; border-radius: 8px;">
+            <h1 style="color: #667eea; text-align: center; margin-bottom: 20px;">🤖 AI Robots</h1>
+            
+            <h2 style="color: #1e293b; margin-bottom: 16px;">Verify Your Email</h2>
+            
+            <p style="color: #64748b; font-size: 16px; line-height: 1.6;">
+              Thank you for registering! Use the OTP below to complete your registration:
+            </p>
+            
+            <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
+              <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">
+                ${otp}
+              </h1>
+            </div>
+            
+            <p style="color: #64748b; font-size: 14px;">
+              This OTP is valid for <strong>10 minutes</strong>.
+            </p>
+            
+            <p style="color: #64748b; font-size: 14px;">
+              If you didn't request this, please ignore this email.
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+            
+            <p style="color: #94a3b8; font-size: 12px; text-align: center;">
+              © 2025 AI Robots Marketplace. All rights reserved.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("❌ Resend error:", error);
+      return false;
+    }
+
+    console.log(`✅ OTP email sent successfully to ${email}`);
+    console.log(`✅ Email ID: ${data.id}`);
+    
     return true;
+
   } catch (error) {
-    console.error("❌ Email send error:", error);
+    console.error("❌ Email send error:", error.message);
+    console.error("❌ Full error:", error);
     return false;
   }
 };
 
+// ✅ Generate 6-digit OTP
 export const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
+
