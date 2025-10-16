@@ -395,70 +395,70 @@
 
 
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
 
-const API_BASE = "https://fullproject-9.onrender.com";
+// const API_BASE = "https://fullproject-9.onrender.com";
 
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+// export default function AuthPage() {
+//   const [isLogin, setIsLogin] = useState(true);
+//   const [name, setName] = useState("");
+//   const [phone, setPhone] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (isLogin) {
-        const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("name", res.data.user?.name || "");
-        localStorage.setItem("email", res.data.user?.email || "");
-        navigate("/");
-      } else {
-        const res = await axios.post(`${API_BASE}/api/auth/register`, { name, email, phone, password });
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("name", res.data.user?.name || "");
-        localStorage.setItem("email", res.data.user?.email || "");
-        navigate("/");
-      }
-    } catch (err) {
-      alert(err.response?.data?.message || "Error");
-    } finally { setLoading(false); }
-  };
+//   const submit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     try {
+//       if (isLogin) {
+//         const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
+//         localStorage.setItem("token", res.data.token);
+//         localStorage.setItem("name", res.data.user?.name || "");
+//         localStorage.setItem("email", res.data.user?.email || "");
+//         navigate("/");
+//       } else {
+//         const res = await axios.post(`${API_BASE}/api/auth/register`, { name, email, phone, password });
+//         localStorage.setItem("token", res.data.token);
+//         localStorage.setItem("name", res.data.user?.name || "");
+//         localStorage.setItem("email", res.data.user?.email || "");
+//         navigate("/");
+//       }
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     } finally { setLoading(false); }
+//   };
 
-  return (
-    <div style={{maxWidth:460, margin:"40px auto", padding:18, background:"#fff", borderRadius:8}}>
-      <h2 style={{textAlign:"center"}}>{isLogin ? "Login" : "Create account"}</h2>
-      <form onSubmit={submit} style={{display:"flex", flexDirection:"column", gap:10, marginTop:12}}>
-        {!isLogin && <>
-          <input placeholder="Full name" value={name} onChange={e=>setName(e.target.value)} required style={input}/>
-          <input placeholder="Phone" value={phone} onChange={e=>setPhone(e.target.value)} required style={input}/>
-        </>}
-        <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required style={input}/>
-        <input placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required style={input}/>
-        <button type="submit" disabled={loading} style={btn}>{loading ? "Please wait..." : (isLogin ? "Login" : "Register")}</button>
-      </form>
-      <p style={{textAlign:"center", marginTop:12}}>
-        {isLogin ? "New here?" : "Already registered?"}
-        <button onClick={()=>setIsLogin(!isLogin)} style={{marginLeft:8, background:"none", border:"none", color:"var(--primary)", cursor:"pointer"}}>
-          {isLogin ? "Create account" : "Login"}
-        </button>
-      </p>
-    </div>
-  );
-}
-const input = { padding:10, borderRadius:6, border:"1px solid #e5e7eb", width:"100%" };
-const btn = { padding:10, borderRadius:6, border:"none", background:"var(--primary)", color:"#fff", fontWeight:600 };
-
-
+//   return (
+//     <div style={{maxWidth:460, margin:"40px auto", padding:18, background:"#fff", borderRadius:8}}>
+//       <h2 style={{textAlign:"center"}}>{isLogin ? "Login" : "Create account"}</h2>
+//       <form onSubmit={submit} style={{display:"flex", flexDirection:"column", gap:10, marginTop:12}}>
+//         {!isLogin && <>
+//           <input placeholder="Full name" value={name} onChange={e=>setName(e.target.value)} required style={input}/>
+//           <input placeholder="Phone" value={phone} onChange={e=>setPhone(e.target.value)} required style={input}/>
+//         </>}
+//         <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required style={input}/>
+//         <input placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required style={input}/>
+//         <button type="submit" disabled={loading} style={btn}>{loading ? "Please wait..." : (isLogin ? "Login" : "Register")}</button>
+//       </form>
+//       <p style={{textAlign:"center", marginTop:12}}>
+//         {isLogin ? "New here?" : "Already registered?"}
+//         <button onClick={()=>setIsLogin(!isLogin)} style={{marginLeft:8, background:"none", border:"none", color:"var(--primary)", cursor:"pointer"}}>
+//           {isLogin ? "Create account" : "Login"}
+//         </button>
+//       </p>
+//     </div>
+//   );
+// }
+// const input = { padding:10, borderRadius:6, border:"1px solid #e5e7eb", width:"100%" };
+// const btn = { padding:10, borderRadius:6, border:"none", background:"var(--primary)", color:"#fff", fontWeight:600 };
 
 
+
+//withdrall
 
 
 
@@ -872,3 +872,569 @@ const btn = { padding:10, borderRadius:6, border:"none", background:"var(--prima
 //     </div>
 //   );
 // }
+
+
+
+
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../api";
+
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [showOTP, setShowOTP] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    bankAccountNumber: "",
+    ifscCode: "",
+    accountHolderName: "",
+    bankName: "",
+    otp: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ LOGIN
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await API.post("/auth/login", {
+        email: formData.email,
+        password: formData.password
+      });
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("name", response.data.user.name);
+      localStorage.setItem("email", response.data.user.email);
+
+      alert("✅ Login successful!");
+      navigate("/");
+    } catch (error) {
+      alert(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ SEND OTP
+  const handleSendOTP = async (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.password) {
+      alert("Please fill required fields (Name, Email, Password)");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await API.post("/auth/send-otp", {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        bankAccountNumber: formData.bankAccountNumber,
+        ifscCode: formData.ifscCode,
+        accountHolderName: formData.accountHolderName,
+        bankName: formData.bankName
+      });
+
+      alert("✅ OTP sent to your email!");
+      setShowOTP(true);
+      startTimer();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ VERIFY OTP
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+
+    if (!formData.otp || formData.otp.length !== 6) {
+      alert("Please enter 6-digit OTP");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await API.post("/auth/verify-otp", {
+        email: formData.email,
+        otp: formData.otp
+      });
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("name", response.data.user.name);
+      localStorage.setItem("email", response.data.user.email);
+
+      alert("✅ Registration successful!");
+      navigate("/");
+    } catch (error) {
+      alert(error.response?.data?.message || "OTP verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ RESEND OTP
+  const handleResendOTP = async () => {
+    try {
+      setLoading(true);
+      await API.post("/auth/resend-otp", { email: formData.email });
+      alert("✅ New OTP sent!");
+      startTimer();
+    } catch (error) {
+      alert("Failed to resend OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startTimer = () => {
+    setTimer(60);
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 20
+    }}>
+      <div style={{
+        background: "#fff",
+        padding: 40,
+        borderRadius: 16,
+        boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+        maxWidth: 500,
+        width: "100%",
+        maxHeight: "90vh",
+        overflowY: "auto"
+      }}>
+        
+        {/* HEADER */}
+        <h1 style={{ textAlign: "center", marginBottom: 8, color: "#1e293b" }}>
+          🤖 AI Robots
+        </h1>
+        <p style={{ textAlign: "center", color: "#64748b", marginBottom: 32 }}>
+          {isLogin ? "Welcome back!" : "Create your account"}
+        </p>
+
+        {/* ========== LOGIN FORM ========== */}
+        {isLogin && (
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 16,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 24,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "14px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                opacity: loading ? 0.7 : 1
+              }}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        )}
+
+        {/* ========== REGISTRATION FORM - STEP 1 ========== */}
+        {!isLogin && !showOTP && (
+          <form onSubmit={handleSendOTP}>
+            
+            {/* Basic Info */}
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name *"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 12,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email *"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 12,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 12,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password * (min 6 chars)"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              minLength={6}
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 16,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+            
+            {/* Bank Details Section */}
+            <div style={{
+              background: "#f1f5f9",
+              padding: 16,
+              borderRadius: 8,
+              marginBottom: 16,
+              border: "2px solid #e2e8f0"
+            }}>
+              <h4 style={{ fontSize: 14, color: "#1e293b", marginBottom: 12, marginTop: 0 }}>
+                🏦 Bank Details (For Withdrawals)
+              </h4>
+              
+              <input
+                type="text"
+                name="accountHolderName"
+                placeholder="Account Holder Name"
+                value={formData.accountHolderName}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginBottom: 10,
+                  border: "2px solid #e2e8f0",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  boxSizing: "border-box"
+                }}
+              />
+              
+              <input
+                type="text"
+                name="bankAccountNumber"
+                placeholder="Bank Account Number"
+                value={formData.bankAccountNumber}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginBottom: 10,
+                  border: "2px solid #e2e8f0",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  boxSizing: "border-box"
+                }}
+              />
+              
+              <input
+                type="text"
+                name="ifscCode"
+                placeholder="IFSC Code (e.g., SBIN0001234)"
+                value={formData.ifscCode}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginBottom: 10,
+                  border: "2px solid #e2e8f0",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  boxSizing: "border-box"
+                }}
+              />
+              
+              <input
+                type="text"
+                name="bankName"
+                placeholder="Bank Name (e.g., HDFC Bank)"
+                value={formData.bankName}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #e2e8f0",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  boxSizing: "border-box"
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "14px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                opacity: loading ? 0.7 : 1
+              }}
+            >
+              {loading ? "Sending OTP..." : "Send OTP"}
+            </button>
+          </form>
+        )}
+
+        {/* ========== REGISTRATION FORM - STEP 2 (OTP) ========== */}
+        {!isLogin && showOTP && (
+          <div>
+            <p style={{ textAlign: "center", color: "#64748b", marginBottom: 24, fontSize: 14 }}>
+              Enter the 6-digit OTP sent to<br />
+              <strong style={{ color: "#1e293b" }}>{formData.email}</strong>
+            </p>
+            
+            <form onSubmit={handleVerifyOTP}>
+              <input
+                type="text"
+                name="otp"
+                placeholder="Enter 6-digit OTP"
+                value={formData.otp}
+                onChange={handleChange}
+                required
+                maxLength={6}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  marginBottom: 16,
+                  border: "2px solid #e2e8f0",
+                  borderRadius: 8,
+                  fontSize: 20,
+                  textAlign: "center",
+                  letterSpacing: "8px",
+                  fontWeight: 700,
+                  boxSizing: "border-box"
+                }}
+              />
+              
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  marginBottom: 12,
+                  opacity: loading ? 0.7 : 1
+                }}
+              >
+                {loading ? "Verifying..." : "Verify & Register"}
+              </button>
+            </form>
+
+            <button
+              onClick={handleResendOTP}
+              disabled={timer > 0 || loading}
+              style={{
+                width: "100%",
+                padding: "12px",
+                background: "transparent",
+                color: timer > 0 ? "#94a3b8" : "#667eea",
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 14,
+                cursor: timer > 0 ? "not-allowed" : "pointer",
+                fontWeight: 600,
+                marginBottom: 12
+              }}
+            >
+              {timer > 0 ? `Resend OTP in ${timer}s` : "Resend OTP"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowOTP(false)}
+              style={{
+                width: "100%",
+                padding: "12px",
+                background: "transparent",
+                color: "#64748b",
+                border: "none",
+                fontSize: 14,
+                cursor: "pointer"
+              }}
+            >
+              ← Change Email
+            </button>
+          </div>
+        )}
+
+        {/* ========== TOGGLE LOGIN/REGISTER ========== */}
+        <p style={{ textAlign: "center", marginTop: 24, color: "#64748b", fontSize: 14 }}>
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button
+            type="button"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setShowOTP(false);
+              setFormData({ 
+                name: "", 
+                email: "", 
+                phone: "", 
+                password: "", 
+                otp: "", 
+                bankAccountNumber: "", 
+                ifscCode: "", 
+                accountHolderName: "", 
+                bankName: "" 
+              });
+            }}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#667eea",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14
+            }}
+          >
+            {isLogin ? "Register" : "Login"}
+          </button>
+        </p>
+
+        {/* ========== SUPPORT SECTION ========== */}
+        <div style={{
+          marginTop: 32,
+          padding: "16px",
+          background: "#f1f5f9",
+          borderRadius: 8,
+          textAlign: "center"
+        }}>
+          <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12, marginTop: 0 }}>
+            Need help? Join our Telegram community
+          </p>
+          <a
+            href="https://t.me/airobotsmarket"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              background: "#0088cc",
+              color: "#fff",
+              textDecoration: "none",
+              borderRadius: 6,
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: "pointer"
+            }}
+          >
+            💬 Join Telegram
+          </a>
+        </div>
+
+      </div>
+    </div>
+  );
+}

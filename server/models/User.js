@@ -151,6 +151,25 @@
 
 //final deploy
 
+// import mongoose from "mongoose";
+
+// const userSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   email: { type: String, unique: true, required: true },
+//   phone: { type: String },
+//   password: { type: String, required: true },
+//   walletBalance: { type: Number, default: 0 }, // user ka wallet
+//   avatar: { type: String, default: "" },       // profile picture
+// }, { timestamps: true }); // createdAt, updatedAt
+
+// export default mongoose.model("User", userSchema);
+
+
+
+
+
+//with
+
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -158,8 +177,15 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   phone: { type: String },
   password: { type: String, required: true },
-  walletBalance: { type: Number, default: 0 }, // user ka wallet
-  avatar: { type: String, default: "" },       // profile picture
-}, { timestamps: true }); // createdAt, updatedAt
+  walletBalance: { type: Number, default: 0 },
+  avatar: { type: String, default: "" },
+  
+  // ✅ Bank Details
+  bankAccountNumber: { type: String, default: "" },
+  ifscCode: { type: String, default: "" },
+  accountHolderName: { type: String, default: "" },
+  bankName: { type: String, default: "" },
+  
+}, { timestamps: true });
 
 export default mongoose.model("User", userSchema);
