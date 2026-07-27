@@ -322,7 +322,7 @@ export default function Navbar() {
 
           {/* Telegram Link - Available for everyone */}
           <a
-            href="https://t.me/airobotsmarket"
+            href="https://t.me/+YkEN6s3Hm_oxY2Nl"
             target="_blank"
             rel="noopener noreferrer"
             style={{
