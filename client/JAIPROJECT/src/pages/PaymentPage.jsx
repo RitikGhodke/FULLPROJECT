@@ -1274,11 +1274,170 @@
 
 
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import API from "../api";
+
+// const RZP_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
+
+// const PRODUCTS = {
+//   1: { id: 1, name: "AI Robot 1", price: 100 },
+//   2: { id: 2, name: "AI Robot 2", price: 500 },
+//   3: { id: 3, name: "AI Robot 3", price: 1200 },
+//   4: { id: 4, name: "AI Robot 4", price: 2400 },
+//   5: { id: 5, name: "AI Robot 5", price: 4980 },
+//   6: { id: 6, name: "AI Robot 6", price: 9850 },
+//   7: { id: 7, name: "AI Robot 7", price: 15600 },
+//   8: { id: 8, name: "AI Robot 8", price: 22450 },
+//   9: { id: 9, name: "AI Robot 9", price: 35000 },
+//   10: { id: 10, name: "AI Robot 10", price: 55800 },
+// };
+
+// // ✅ Dynamically load Razorpay script and wait for it
+// function loadRazorpayScript() {
+//   return new Promise((resolve) => {
+//     if (window.Razorpay) {
+//       resolve(true);
+//       return;
+//     }
+//     const script = document.createElement("script");
+//     script.src = "https://checkout.razorpay.com/v1/checkout.js";
+//     script.onload = () => resolve(true);
+//     script.onerror = () => resolve(false);
+//     document.body.appendChild(script);
+//   });
+// }
+
+// export default function PaymentPage() {
+//   const { id } = useParams();
+//   const product = PRODUCTS[id];
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   const handlePay = async () => {
+//     if (!product) return;
+
+//     const token = localStorage.getItem("token");
+//     if (!token) {
+//       alert("⚠️ Please login first");
+//       navigate("/auth");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       // ✅ Ensure Razorpay script is loaded before proceeding
+//       const scriptLoaded = await loadRazorpayScript();
+//       if (!scriptLoaded || !window.Razorpay) {
+//         alert("❌ Razorpay SDK load nahi hui. Internet check karo ya ad-blocker band karo.");
+//         setLoading(false);
+//         return;
+//       }
+
+//       // 1) Create order on backend
+//       const res = await API.post("/payment/create-order", {
+//         productId: product.id,
+//       });
+
+//       const order = res.data?.order;
+//       if (!order || !order.amount) {
+//         alert("Invalid order response from server");
+//         return;
+//       }
+
+//       // 2) Razorpay checkout
+//       const options = {
+//         key: RZP_KEY,
+//         amount: order.amount,
+//         currency: order.currency || "INR",
+//         name: product.name,
+//         description: `Purchase ${product.name}`,
+//         order_id: order.id,
+//         handler: async (response) => {
+//           try {
+//             await API.post("/payment/verify-payment", {
+//               razorpay_order_id: response.razorpay_order_id,
+//               razorpay_payment_id: response.razorpay_payment_id,
+//               razorpay_signature: response.razorpay_signature,
+//               productId: product.id,
+//             });
+//             alert("✅ Payment successful!");
+//             navigate("/success");
+//           } catch (err) {
+//             console.error("Payment verification error:", err);
+//             alert("❌ Payment verification failed");
+//             navigate("/cancel");
+//           }
+//         },
+//         prefill: {
+//           name: localStorage.getItem("name") || "",
+//           email: localStorage.getItem("email") || "",
+//         },
+//         theme: { color: "#667eea" },
+//       };
+
+//       const rzp = new window.Razorpay(options);
+//       rzp.open();
+//     } catch (err) {
+//       console.error("Order creation error:", err);
+//       alert(err.response?.data?.message || "❌ Order creation failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   if (!product) {
+//     return <div style={{ padding: 24 }}>❌ Product not found</div>;
+//   }
+
+//   return (
+//     <div style={{ padding: 24, maxWidth: 720, margin: "40px auto" }}>
+//       <div style={{ background: "#fff", padding: 32, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+//         <h2 style={{ marginBottom: 16, color: "#333" }}>{product.name}</h2>
+//         <p style={{ fontSize: 24, fontWeight: 700, color: "#0b74de", marginBottom: 24 }}>
+//           Price: ₹{product.price}
+//         </p>
+//         <button
+//           onClick={handlePay}
+//           disabled={loading}
+//           style={{
+//             width: "100%",
+//             padding: "14px",
+//             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//             color: "#fff",
+//             border: "none",
+//             borderRadius: 8,
+//             fontSize: 16,
+//             fontWeight: 600,
+//             cursor: loading ? "not-allowed" : "pointer",
+//             transition: "transform 0.2s",
+//           }}
+//           onMouseOver={(e) => !loading && (e.target.style.transform = "scale(1.02)")}
+//           onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
+//         >
+//           {loading ? "Processing..." : `Pay ₹${product.price}`}
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
-
-const RZP_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 const PRODUCTS = {
   1: { id: 1, name: "AI Robot 1", price: 100 },
@@ -1293,95 +1452,54 @@ const PRODUCTS = {
   10: { id: 10, name: "AI Robot 10", price: 55800 },
 };
 
-// ✅ Dynamically load Razorpay script and wait for it
-function loadRazorpayScript() {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
-
 export default function PaymentPage() {
   const { id } = useParams();
   const product = PRODUCTS[id];
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handlePay = async () => {
-    if (!product) return;
+  const [settings, setSettings] = useState({ upiId: "", qrImageUrl: "" });
+  const [utr, setUtr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("⚠️ Please login first");
       navigate("/auth");
       return;
     }
+    fetchSettings();
+  }, []);
 
+  const fetchSettings = async () => {
+    try {
+      const res = await API.get("/payment/settings");
+      setSettings(res.data);
+    } catch (err) {
+      console.error("Failed to load payment settings:", err);
+    }
+  };
+
+  const copyUpi = () => {
+    navigator.clipboard.writeText(settings.upiId);
+    alert("✅ UPI ID copied!");
+  };
+
+  const handleSubmit = async () => {
+    if (!utr.trim()) {
+      alert("⚠️ UTR / Transaction ID daalo");
+      return;
+    }
     try {
       setLoading(true);
-
-      // ✅ Ensure Razorpay script is loaded before proceeding
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded || !window.Razorpay) {
-        alert("❌ Razorpay SDK load nahi hui. Internet check karo ya ad-blocker band karo.");
-        setLoading(false);
-        return;
-      }
-
-      // 1) Create order on backend
-      const res = await API.post("/payment/create-order", {
+      await API.post("/payment/submit-payment", {
         productId: product.id,
+        utrNumber: utr.trim(),
       });
-
-      const order = res.data?.order;
-      if (!order || !order.amount) {
-        alert("Invalid order response from server");
-        return;
-      }
-
-      // 2) Razorpay checkout
-      const options = {
-        key: RZP_KEY,
-        amount: order.amount,
-        currency: order.currency || "INR",
-        name: product.name,
-        description: `Purchase ${product.name}`,
-        order_id: order.id,
-        handler: async (response) => {
-          try {
-            await API.post("/payment/verify-payment", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              productId: product.id,
-            });
-            alert("✅ Payment successful!");
-            navigate("/success");
-          } catch (err) {
-            console.error("Payment verification error:", err);
-            alert("❌ Payment verification failed");
-            navigate("/cancel");
-          }
-        },
-        prefill: {
-          name: localStorage.getItem("name") || "",
-          email: localStorage.getItem("email") || "",
-        },
-        theme: { color: "#667eea" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      setSubmitted(true);
     } catch (err) {
-      console.error("Order creation error:", err);
-      alert(err.response?.data?.message || "❌ Order creation failed");
+      alert(err.response?.data?.message || "❌ Submission failed");
     } finally {
       setLoading(false);
     }
@@ -1391,6 +1509,25 @@ export default function PaymentPage() {
     return <div style={{ padding: 24 }}>❌ Product not found</div>;
   }
 
+  if (submitted) {
+    return (
+      <div style={{ padding: 24, maxWidth: 720, margin: "40px auto" }}>
+        <div style={{ background: "#fff", padding: 32, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.1)", textAlign: "center" }}>
+          <h2 style={{ color: "#059669" }}>✅ Payment Submitted</h2>
+          <p style={{ color: "#64748b", marginTop: 12 }}>
+            Admin verification ke baad tumhara plan active ho jayega. Wallet page pe status check kar sakte ho.
+          </p>
+          <button
+            onClick={() => navigate("/wallet")}
+            style={{ marginTop: 20, padding: "12px 24px", background: "#667eea", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}
+          >
+            Go to Wallet
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: 24, maxWidth: 720, margin: "40px auto" }}>
       <div style={{ background: "#fff", padding: 32, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
@@ -1398,8 +1535,39 @@ export default function PaymentPage() {
         <p style={{ fontSize: 24, fontWeight: 700, color: "#0b74de", marginBottom: 24 }}>
           Price: ₹{product.price}
         </p>
+
+        {settings.qrImageUrl ? (
+          <img
+            src={settings.qrImageUrl}
+            alt="Payment QR"
+            style={{ width: 220, height: 220, margin: "0 auto 16px", display: "block", borderRadius: 8, border: "1px solid #e2e8f0" }}
+          />
+        ) : (
+          <p style={{ color: "#94a3b8", textAlign: "center" }}>QR loading...</p>
+        )}
+
+        {settings.upiId && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 24 }}>
+            <span style={{ fontWeight: 600, color: "#1e293b" }}>{settings.upiId}</span>
+            <button
+              onClick={copyUpi}
+              style={{ padding: "4px 10px", fontSize: 12, background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 6, cursor: "pointer" }}
+            >
+              Copy
+            </button>
+          </div>
+        )}
+
+        <input
+          type="text"
+          placeholder="Payment ke baad UTR / Transaction ID daalo"
+          value={utr}
+          onChange={(e) => setUtr(e.target.value)}
+          style={{ width: "100%", padding: "12px", border: "1px solid #e2e8f0", borderRadius: 8, marginBottom: 16, boxSizing: "border-box" }}
+        />
+
         <button
-          onClick={handlePay}
+          onClick={handleSubmit}
           disabled={loading}
           style={{
             width: "100%",
@@ -1411,12 +1579,9 @@ export default function PaymentPage() {
             fontSize: 16,
             fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer",
-            transition: "transform 0.2s",
           }}
-          onMouseOver={(e) => !loading && (e.target.style.transform = "scale(1.02)")}
-          onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
         >
-          {loading ? "Processing..." : `Pay ₹${product.price}`}
+          {loading ? "Submitting..." : "Maine Payment Kar Diya"}
         </button>
       </div>
     </div>
