@@ -1466,20 +1466,162 @@
 
 
 
+// import express from "express";
+// import authMiddleware from "../middleware/authMiddleware.js";
+// import adminMiddleware from "../middleware/adminMiddleware.js";
+// import { createOrder, verifyPayment, getWallet } from "../controllers/paymentController.js";
+
+// const router = express.Router();
+
+// const withdrawalRequests = [];
+
+// // ✅ Razorpay: Create Order
+// router.post("/create-order", authMiddleware, createOrder);
+
+// // ✅ Razorpay: Verify Payment
+// router.post("/verify-payment", authMiddleware, verifyPayment);
+
+// // ✅ Get user's wallet + purchases
+// router.get("/wallet", authMiddleware, getWallet);
+
+// // ✅ Submit Withdrawal Request
+// router.post("/withdrawal-request", authMiddleware, async (req, res) => {
+//   try {
+//     const { amount } = req.body;
+
+//     console.log("🔹 Withdrawal request from user:", req.user._id);
+//     console.log("🔹 Amount:", amount);
+
+//     if (!amount || amount <= 0) {
+//       return res.status(400).json({ message: "Invalid amount" });
+//     }
+
+//     if (req.user.walletBalance < amount) {
+//       return res.status(400).json({ message: "Insufficient balance" });
+//     }
+
+//     const withdrawal = {
+//       userId: req.user._id.toString(),
+//       userName: req.user.name,
+//       userEmail: req.user.email,
+//       amount: amount,
+//       bankAccountNumber: req.user.bankAccountNumber || "Not provided",
+//       ifscCode: req.user.ifscCode || "Not provided",
+//       accountHolderName: req.user.accountHolderName || req.user.name,
+//       status: "pending",
+//       requestedAt: new Date()
+//     };
+
+//     withdrawalRequests.push(withdrawal);
+
+//     console.log("✅ Withdrawal request submitted:", withdrawal);
+
+//     res.json({ 
+//       success: true, 
+//       message: "Withdrawal request submitted! Admin will process soon.",
+//       withdrawal: withdrawal
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Withdrawal request error:", error);
+//     res.status(500).json({ message: "Failed to submit withdrawal request" });
+//   }
+// });
+
+// // ✅ Get all withdrawal requests (ADMIN ONLY)
+// router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Admin fetching withdrawal requests");
+    
+//     res.json({ 
+//       success: true,
+//       withdrawals: withdrawalRequests,
+//       count: withdrawalRequests.length
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Fetch withdrawals error:", error);
+//     res.status(500).json({ message: "Failed to fetch withdrawals" });
+//   }
+// });
+
+// // ✅ Approve/Reject Withdrawal (ADMIN ONLY)
+// router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     const { userId, amount, status } = req.body;
+
+//     console.log("🔹 Admin processing withdrawal:", { userId, amount, status });
+
+//     const withdrawal = withdrawalRequests.find(
+//       w => w.userId === userId && w.amount === amount && w.status === "pending"
+//     );
+    
+//     if (!withdrawal) {
+//       return res.status(404).json({ message: "Withdrawal request not found" });
+//     }
+
+//     withdrawal.status = status;
+//     withdrawal.processedAt = new Date();
+//     withdrawal.processedBy = req.user._id.toString();
+
+//     console.log(`✅ Withdrawal ${status} by admin:`, req.user.email);
+
+//     res.json({ 
+//       success: true,
+//       message: `Withdrawal ${status} successfully`,
+//       withdrawal: withdrawal
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Process withdrawal error:", error);
+//     res.status(500).json({ message: "Processing failed" });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
-import { createOrder, verifyPayment, getWallet } from "../controllers/paymentController.js";
+import upload from "../middleware/uploadMiddleware.js"; // 👈 apni existing multer middleware ka path check karo
+import {
+  getPaymentSettings,
+  updatePaymentSettings,
+  submitPayment,
+  getPendingPurchases,
+  approvePurchase,
+  rejectPurchase,
+  getWallet,
+} from "../controllers/paymentController.js";
 
 const router = express.Router();
 
 const withdrawalRequests = [];
 
-// ✅ Razorpay: Create Order
-router.post("/create-order", authMiddleware, createOrder);
+// ✅ Payment settings (QR + UPI)
+router.get("/settings", authMiddleware, getPaymentSettings);
+router.post("/settings", authMiddleware, adminMiddleware, upload.single("qrImage"), updatePaymentSettings);
 
-// ✅ Razorpay: Verify Payment
-router.post("/verify-payment", authMiddleware, verifyPayment);
+// ✅ Submit UPI payment (UTR)
+router.post("/submit-payment", authMiddleware, submitPayment);
+
+// ✅ Admin: pending purchases
+router.get("/pending-purchases", authMiddleware, adminMiddleware, getPendingPurchases);
+router.post("/approve-purchase", authMiddleware, adminMiddleware, approvePurchase);
+router.post("/reject-purchase", authMiddleware, adminMiddleware, rejectPurchase);
 
 // ✅ Get user's wallet + purchases
 router.get("/wallet", authMiddleware, getWallet);
@@ -1488,14 +1630,9 @@ router.get("/wallet", authMiddleware, getWallet);
 router.post("/withdrawal-request", authMiddleware, async (req, res) => {
   try {
     const { amount } = req.body;
-
-    console.log("🔹 Withdrawal request from user:", req.user._id);
-    console.log("🔹 Amount:", amount);
-
     if (!amount || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
     }
-
     if (req.user.walletBalance < amount) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
@@ -1514,16 +1651,12 @@ router.post("/withdrawal-request", authMiddleware, async (req, res) => {
 
     withdrawalRequests.push(withdrawal);
 
-    console.log("✅ Withdrawal request submitted:", withdrawal);
-
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "Withdrawal request submitted! Admin will process soon.",
       withdrawal: withdrawal
     });
-
   } catch (error) {
-    console.error("❌ Withdrawal request error:", error);
     res.status(500).json({ message: "Failed to submit withdrawal request" });
   }
 });
@@ -1531,16 +1664,12 @@ router.post("/withdrawal-request", authMiddleware, async (req, res) => {
 // ✅ Get all withdrawal requests (ADMIN ONLY)
 router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    console.log("🔹 Admin fetching withdrawal requests");
-    
-    res.json({ 
+    res.json({
       success: true,
       withdrawals: withdrawalRequests,
       count: withdrawalRequests.length
     });
-
   } catch (error) {
-    console.error("❌ Fetch withdrawals error:", error);
     res.status(500).json({ message: "Failed to fetch withdrawals" });
   }
 });
@@ -1550,12 +1679,10 @@ router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, 
   try {
     const { userId, amount, status } = req.body;
 
-    console.log("🔹 Admin processing withdrawal:", { userId, amount, status });
-
     const withdrawal = withdrawalRequests.find(
       w => w.userId === userId && w.amount === amount && w.status === "pending"
     );
-    
+
     if (!withdrawal) {
       return res.status(404).json({ message: "Withdrawal request not found" });
     }
@@ -1564,16 +1691,12 @@ router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, 
     withdrawal.processedAt = new Date();
     withdrawal.processedBy = req.user._id.toString();
 
-    console.log(`✅ Withdrawal ${status} by admin:`, req.user.email);
-
-    res.json({ 
+    res.json({
       success: true,
       message: `Withdrawal ${status} successfully`,
       withdrawal: withdrawal
     });
-
   } catch (error) {
-    console.error("❌ Process withdrawal error:", error);
     res.status(500).json({ message: "Processing failed" });
   }
 });

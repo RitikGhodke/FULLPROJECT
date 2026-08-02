@@ -144,6 +144,74 @@
 
 
 
+// import mongoose from "mongoose";
+
+// const purchaseSchema = new mongoose.Schema(
+//   {
+//     user: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true,
+//     },
+//     productId: {
+//       type: Number,
+//       required: true,
+//     },
+//     productName: {
+//       type: String,
+//       required: true,
+//     },
+//     razorpayOrderId: {
+//       type: String,
+//       required: true,
+//     },
+//     razorpayPaymentId: {
+//       type: String,
+//     },
+//     amount: {
+//       type: Number,
+//       required: true,
+//     },
+//     startDate: {
+//       type: Date,
+//     },
+//     expiryDate: {
+//       type: Date,
+//     },
+//     totalProfit: {
+//       type: Number,
+//       default: 0,
+//     },
+//     dailyProfit: {
+//       type: Number,
+//       default: 0,
+//     },
+//     remainingDays: {
+//       type: Number,
+//       default: 0,
+//     },
+//     active: {
+//       type: Boolean,
+//       default: true,
+//     },
+//     status: {
+//       type: String,
+//       enum: ["created", "paid", "failed"],
+//       default: "created",
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// const Purchase = mongoose.model("Purchase", purchaseSchema);
+// export default Purchase;
+
+
+
+
+
+
+
 import mongoose from "mongoose";
 
 const purchaseSchema = new mongoose.Schema(
@@ -161,15 +229,17 @@ const purchaseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    razorpayOrderId: {
-      type: String,
-      required: true,
-    },
-    razorpayPaymentId: {
-      type: String,
-    },
     amount: {
       type: Number,
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["upi"],
+      default: "upi",
+    },
+    utrNumber: {
+      type: String,
       required: true,
     },
     startDate: {
@@ -192,12 +262,19 @@ const purchaseSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     status: {
       type: String,
-      enum: ["created", "paid", "failed"],
-      default: "created",
+      enum: ["pending_verification", "paid", "rejected"],
+      default: "pending_verification",
+    },
+    processedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    processedAt: {
+      type: Date,
     },
   },
   { timestamps: true }
