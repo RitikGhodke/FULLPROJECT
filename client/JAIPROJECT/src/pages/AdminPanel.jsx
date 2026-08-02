@@ -1153,6 +1153,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 
+const UPLOADS_BASE = API.defaults.baseURL.replace("/api", ""); 
+
 export default function AdminPanel() {
   const [withdrawals, setWithdrawals] = useState([]);
   const [pendingPurchases, setPendingPurchases] = useState([]);
@@ -1358,16 +1360,16 @@ export default function AdminPanel() {
             <div>
               <p style={{ fontSize: 13, color: "#64748b", marginBottom: 8 }}>Current QR</p>
               {settings.qrImageUrl ? (
-                <img
-                  src={settings.qrImageUrl}
-                  alt="Current QR"
-                  style={{ width: 160, height: 160, borderRadius: 8, border: "1px solid #e2e8f0" }}
-                />
-              ) : (
-                <div style={{ width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #e2e8f0", borderRadius: 8, color: "#94a3b8", fontSize: 13 }}>
-                  No QR set
-                </div>
-              )}
+  <img
+    src={`${UPLOADS_BASE}${settings.qrImageUrl}`}
+    alt="Current QR"
+    style={{ width: 160, height: 160, borderRadius: 8, border: "1px solid #e2e8f0" }}
+  />
+) : (
+  <div style={{ width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #e2e8f0", borderRadius: 8, color: "#94a3b8", fontSize: 13 }}>
+    No QR set
+  </div>
+)}
             </div>
 
             <div style={{ flex: 1, minWidth: 260 }}>

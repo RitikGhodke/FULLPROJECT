@@ -1439,6 +1439,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 
+const UPLOADS_BASE = API.defaults.baseURL.replace("/api", "");
+
 const PRODUCTS = {
   1: { id: 1, name: "AI Robot 1", price: 100 },
   2: { id: 2, name: "AI Robot 2", price: 500 },
@@ -1537,14 +1539,14 @@ export default function PaymentPage() {
         </p>
 
         {settings.qrImageUrl ? (
-          <img
-            src={settings.qrImageUrl}
-            alt="Payment QR"
-            style={{ width: 220, height: 220, margin: "0 auto 16px", display: "block", borderRadius: 8, border: "1px solid #e2e8f0" }}
-          />
-        ) : (
-          <p style={{ color: "#94a3b8", textAlign: "center" }}>QR loading...</p>
-        )}
+  <img
+    src={`${UPLOADS_BASE}${settings.qrImageUrl}`}
+    alt="Payment QR"
+    style={{ width: 220, height: 220, margin: "0 auto 16px", display: "block", borderRadius: 8, border: "1px solid #e2e8f0" }}
+  />
+) : (
+  <p style={{ color: "#94a3b8", textAlign: "center" }}>QR loading...</p>
+)}
 
         {settings.upiId && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 24 }}>
