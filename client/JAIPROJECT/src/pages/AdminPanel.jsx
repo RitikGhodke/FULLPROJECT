@@ -1153,7 +1153,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 
-const UPLOADS_BASE = API.defaults.baseURL.replace("/api", ""); 
+const UPLOADS_BASE = API.defaults.baseURL.replace(/\/api\/?$/, ""); // 👈 fix
 
 export default function AdminPanel() {
   const [withdrawals, setWithdrawals] = useState([]);

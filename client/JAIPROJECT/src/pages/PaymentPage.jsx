@@ -1439,7 +1439,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 
-const UPLOADS_BASE = API.defaults.baseURL.replace("/api", "");
+const UPLOADS_BASE = API.defaults.baseURL.replace(/\/api\/?$/, ""); // 👈 fix
 
 const PRODUCTS = {
   1: { id: 1, name: "AI Robot 1", price: 100 },
