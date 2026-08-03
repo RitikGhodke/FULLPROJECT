@@ -1597,6 +1597,8 @@ import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js"; // 👈 apni existing multer middleware ka path check karo
+import Withdrawal from "../models/Withdrawal.js";   // 👈 ADD THIS
+import User from "../models/User.js";               // 👈 ADD THI
 import {
   getPaymentSettings,
   updatePaymentSettings,
@@ -1637,24 +1639,21 @@ router.post("/withdrawal-request", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Insufficient balance" });
     }
 
-    const withdrawal = {
-      userId: req.user._id.toString(),
+    const withdrawal = await Withdrawal.create({
+      userId: req.user._id,
       userName: req.user.name,
       userEmail: req.user.email,
-      amount: amount,
+      amount,
       bankAccountNumber: req.user.bankAccountNumber || "Not provided",
       ifscCode: req.user.ifscCode || "Not provided",
       accountHolderName: req.user.accountHolderName || req.user.name,
       status: "pending",
-      requestedAt: new Date()
-    };
-
-    withdrawalRequests.push(withdrawal);
+    });
 
     res.json({
       success: true,
       message: "Withdrawal request submitted! Admin will process soon.",
-      withdrawal: withdrawal
+      withdrawal,
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to submit withdrawal request" });
@@ -1664,10 +1663,11 @@ router.post("/withdrawal-request", authMiddleware, async (req, res) => {
 // ✅ Get all withdrawal requests (ADMIN ONLY)
 router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, res) => {
   try {
+    const withdrawals = await Withdrawal.find().sort({ createdAt: -1 });
     res.json({
       success: true,
-      withdrawals: withdrawalRequests,
-      count: withdrawalRequests.length
+      withdrawals,
+      count: withdrawals.length,
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch withdrawals" });
@@ -1677,28 +1677,55 @@ router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, 
 // ✅ Approve/Reject Withdrawal (ADMIN ONLY)
 router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { userId, amount, status } = req.body;
+    const { withdrawalId, status } = req.body; // 👈 ab id se dhundo, amount/userId se nahi
 
-    const withdrawal = withdrawalRequests.find(
-      w => w.userId === userId && w.amount === amount && w.status === "pending"
-    );
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
 
+    const withdrawal = await Withdrawal.findOne({ _id: withdrawalId, status: "pending" });
     if (!withdrawal) {
-      return res.status(404).json({ message: "Withdrawal request not found" });
+      return res.status(404).json({ message: "Withdrawal request not found or already processed" });
+    }
+
+    // ✅ Agar approve ho raha hai to hi balance deduct karo
+    if (status === "approved") {
+      const user = await User.findById(withdrawal.userId);
+      if (!user || user.walletBalance < withdrawal.amount) {
+        return res.status(400).json({ message: "User has insufficient balance now" });
+      }
+      user.walletBalance -= withdrawal.amount;
+      await user.save();
     }
 
     withdrawal.status = status;
     withdrawal.processedAt = new Date();
-    withdrawal.processedBy = req.user._id.toString();
+    withdrawal.processedBy = req.user._id;
+    await withdrawal.save();
 
     res.json({
       success: true,
       message: `Withdrawal ${status} successfully`,
-      withdrawal: withdrawal
+      withdrawal,
     });
   } catch (error) {
     res.status(500).json({ message: "Processing failed" });
   }
 });
+
+// ✅ Get logged-in user's own withdrawal history
+router.get("/my-withdrawals", authMiddleware, async (req, res) => {
+  try {
+    const withdrawals = await Withdrawal.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    res.json({
+      success: true,
+      withdrawals,
+      count: withdrawals.length,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch withdrawal history" });
+  }
+});
+
 
 export default router;
