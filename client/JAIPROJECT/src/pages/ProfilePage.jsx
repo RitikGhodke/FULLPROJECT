@@ -470,6 +470,385 @@
 
 
 //edit
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from "../api";
+
+// export default function Profile() {
+//   const [user, setUser] = useState({
+//     name: "",
+//     email: "",
+//     phone: ""
+//   });
+//   const [editing, setEditing] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     loadUserData();
+//   }, []);
+
+//   const loadUserData = () => {
+//     setUser({
+//       name: localStorage.getItem("name") || "",
+//       email: localStorage.getItem("email") || "",
+//       phone: localStorage.getItem("phone") || ""
+//     });
+//   };
+
+//   const handleLogout = () => {
+//     if (window.confirm("Are you sure you want to logout?")) {
+//       localStorage.clear();
+//       navigate("/auth");
+//     }
+//   };
+
+//   const handleSave = async () => {
+//     try {
+//       setLoading(true);
+      
+//       // Update localStorage
+//       localStorage.setItem("name", user.name);
+//       localStorage.setItem("email", user.email);
+//       localStorage.setItem("phone", user.phone);
+
+//       // Optional: Call API to update backend
+//       // await API.put("/auth/update-profile", user);
+
+//       alert("✅ Profile updated successfully!");
+//       setEditing(false);
+//       setLoading(false);
+//     } catch (error) {
+//       console.error("Update error:", error);
+//       alert("❌ Failed to update profile");
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div style={{
+//       minHeight: "100vh",
+//       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//       padding: "40px 20px"
+//     }}>
+//       <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        
+//         {/* Back Button */}
+//         <button
+//           onClick={() => navigate("/")}
+//           style={{
+//             padding: "10px 20px",
+//             background: "rgba(255,255,255,0.2)",
+//             color: "#fff",
+//             border: "none",
+//             borderRadius: 8,
+//             cursor: "pointer",
+//             fontWeight: 600,
+//             marginBottom: 20,
+//             backdropFilter: "blur(10px)"
+//           }}
+//         >
+//           ← Back to Home
+//         </button>
+
+//         {/* Profile Card */}
+//         <div style={{
+//           background: "#fff",
+//           borderRadius: 16,
+//           padding: 40,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+          
+//           {/* Avatar */}
+//           <div style={{ textAlign: "center", marginBottom: 32 }}>
+//             <div style={{
+//               width: 120,
+//               height: 120,
+//               borderRadius: "50%",
+//               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//               margin: "0 auto 16px",
+//               display: "flex",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               fontSize: 48,
+//               color: "#fff",
+//               fontWeight: 700,
+//               boxShadow: "0 10px 30px rgba(102,126,234,0.3)"
+//             }}>
+//               {user.name.charAt(0).toUpperCase() || "U"}
+//             </div>
+//             <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1e293b", marginBottom: 4 }}>
+//               {user.name || "User"}
+//             </h1>
+//             <p style={{ color: "#64748b", fontSize: 14 }}>Member since 2025</p>
+//           </div>
+
+//           {/* Form Fields */}
+//           <div style={{ maxWidth: 500, margin: "0 auto" }}>
+            
+//             {/* Name Field */}
+//             <div style={{ marginBottom: 24 }}>
+//               <label style={{
+//                 display: "block",
+//                 marginBottom: 8,
+//                 fontWeight: 600,
+//                 color: "#1e293b",
+//                 fontSize: 14
+//               }}>
+//                 Full Name
+//               </label>
+//               <input
+//                 type="text"
+//                 value={user.name}
+//                 onChange={(e) => setUser({...user, name: e.target.value})}
+//                 disabled={!editing}
+//                 style={{
+//                   width: "100%",
+//                   padding: "14px 16px",
+//                   border: "2px solid #e2e8f0",
+//                   borderRadius: 10,
+//                   fontSize: 16,
+//                   outline: "none",
+//                   background: editing ? "#fff" : "#f8fafc",
+//                   color: editing ? "#1e293b" : "#64748b",
+//                   transition: "all 0.3s ease"
+//                 }}
+//               />
+//             </div>
+
+//             {/* Email Field */}
+//             <div style={{ marginBottom: 24 }}>
+//               <label style={{
+//                 display: "block",
+//                 marginBottom: 8,
+//                 fontWeight: 600,
+//                 color: "#1e293b",
+//                 fontSize: 14
+//               }}>
+//                 Email Address
+//               </label>
+//               <input
+//                 type="email"
+//                 value={user.email}
+//                 onChange={(e) => setUser({...user, email: e.target.value})}
+//                 disabled={!editing}
+//                 style={{
+//                   width: "100%",
+//                   padding: "14px 16px",
+//                   border: "2px solid #e2e8f0",
+//                   borderRadius: 10,
+//                   fontSize: 16,
+//                   outline: "none",
+//                   background: editing ? "#fff" : "#f8fafc",
+//                   color: editing ? "#1e293b" : "#64748b",
+//                   transition: "all 0.3s ease"
+//                 }}
+//               />
+//             </div>
+
+//             {/* Phone Field */}
+//             <div style={{ marginBottom: 32 }}>
+//               <label style={{
+//                 display: "block",
+//                 marginBottom: 8,
+//                 fontWeight: 600,
+//                 color: "#1e293b",
+//                 fontSize: 14
+//               }}>
+//                 Phone Number
+//               </label>
+//               <input
+//                 type="tel"
+//                 value={user.phone}
+//                 onChange={(e) => setUser({...user, phone: e.target.value})}
+//                 disabled={!editing}
+//                 placeholder="Enter phone number"
+//                 style={{
+//                   width: "100%",
+//                   padding: "14px 16px",
+//                   border: "2px solid #e2e8f0",
+//                   borderRadius: 10,
+//                   fontSize: 16,
+//                   outline: "none",
+//                   background: editing ? "#fff" : "#f8fafc",
+//                   color: editing ? "#1e293b" : "#64748b",
+//                   transition: "all 0.3s ease"
+//                 }}
+//               />
+//             </div>
+
+//             {/* Action Buttons */}
+//             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+//               {!editing ? (
+//                 <>
+//                   <button
+//                     onClick={() => setEditing(true)}
+//                     style={{
+//                       flex: 1,
+//                       padding: "14px",
+//                       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//                       color: "#fff",
+//                       border: "none",
+//                       borderRadius: 10,
+//                       cursor: "pointer",
+//                       fontWeight: 600,
+//                       fontSize: 16
+//                     }}
+//                   >
+//                     ✏️ Edit Profile
+//                   </button>
+//                   <button
+//                     onClick={() => navigate("/dashboard")}
+//                     style={{
+//                       flex: 1,
+//                       padding: "14px",
+//                       background: "#f1f5f9",
+//                       color: "#1e293b",
+//                       border: "none",
+//                       borderRadius: 10,
+//                       cursor: "pointer",
+//                       fontWeight: 600,
+//                       fontSize: 16
+//                     }}
+//                   >
+//                     📊 Dashboard
+//                   </button>
+//                 </>
+//               ) : (
+//                 <>
+//                   <button
+//                     onClick={handleSave}
+//                     disabled={loading}
+//                     style={{
+//                       flex: 1,
+//                       padding: "14px",
+//                       background: loading ? "#94a3b8" : "#059669",
+//                       color: "#fff",
+//                       border: "none",
+//                       borderRadius: 10,
+//                       cursor: loading ? "not-allowed" : "pointer",
+//                       fontWeight: 600,
+//                       fontSize: 16
+//                     }}
+//                   >
+//                     {loading ? "Saving..." : "💾 Save Changes"}
+//                   </button>
+//                   <button
+//                     onClick={() => {
+//                       setEditing(false);
+//                       loadUserData();
+//                     }}
+//                     disabled={loading}
+//                     style={{
+//                       flex: 1,
+//                       padding: "14px",
+//                       background: "#f1f5f9",
+//                       color: "#64748b",
+//                       border: "none",
+//                       borderRadius: 10,
+//                       cursor: "pointer",
+//                       fontWeight: 600,
+//                       fontSize: 16
+//                     }}
+//                   >
+//                     ✕ Cancel
+//                   </button>
+//                 </>
+//               )}
+//             </div>
+
+//             {/* Logout Button */}
+//             <button
+//               onClick={handleLogout}
+//               style={{
+//                 width: "100%",
+//                 marginTop: 24,
+//                 padding: "14px",
+//                 background: "#fee2e2",
+//                 color: "#dc2626",
+//                 border: "2px solid #fecaca",
+//                 borderRadius: 10,
+//                 cursor: "pointer",
+//                 fontWeight: 600,
+//                 fontSize: 16,
+//                 transition: "all 0.3s ease"
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.background = "#dc2626";
+//                 e.target.style.color = "#fff";
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.background = "#fee2e2";
+//                 e.target.style.color = "#dc2626";
+//               }}
+//             >
+//               🚪 Logout
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* Quick Stats */}
+//         <div style={{
+//           marginTop: 24,
+//           display: "grid",
+//           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+//           gap: 16
+//         }}>
+//           <div style={{
+//             background: "rgba(255,255,255,0.95)",
+//             padding: 20,
+//             borderRadius: 12,
+//             textAlign: "center",
+//             backdropFilter: "blur(10px)"
+//           }}>
+//             <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
+//             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>AI Robots</div>
+//             <div style={{ fontSize: 24, fontWeight: 800, color: "#667eea" }}>0</div>
+//           </div>
+
+//           <div style={{
+//             background: "rgba(255,255,255,0.95)",
+//             padding: 20,
+//             borderRadius: 12,
+//             textAlign: "center",
+//             backdropFilter: "blur(10px)"
+//           }}>
+//             <div style={{ fontSize: 32, marginBottom: 8 }}>💰</div>
+//             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Total Earned</div>
+//             <div style={{ fontSize: 24, fontWeight: 800, color: "#059669" }}>₹0</div>
+//           </div>
+
+//           <div style={{
+//             background: "rgba(255,255,255,0.95)",
+//             padding: 20,
+//             borderRadius: 12,
+//             textAlign: "center",
+//             backdropFilter: "blur(10px)"
+//           }}>
+//             <div style={{ fontSize: 32, marginBottom: 8 }}>📈</div>
+//             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Active Days</div>
+//             <div style={{ fontSize: 24, fontWeight: 800, color: "#0891b2" }}>0</div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -482,10 +861,19 @@ export default function Profile() {
   });
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // 👇 NEW: real stats state
+  const [stats, setStats] = useState({
+    activeRobots: 0,
+    totalEarned: 0,
+    activeDays: 0
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
     loadUserData();
+    fetchStats(); // 👈 NEW
   }, []);
 
   const loadUserData = () => {
@@ -494,6 +882,37 @@ export default function Profile() {
       email: localStorage.getItem("email") || "",
       phone: localStorage.getItem("phone") || ""
     });
+  };
+
+  // 👇 NEW: fetch real purchase/wallet data and compute stats
+  const fetchStats = async () => {
+    try {
+      const response = await API.get("/payment/wallet");
+      const purchases = response.data.purchases || [];
+
+      const activeRobots = purchases.filter((p) => p.active).length;
+
+      const totalEarned = purchases.reduce(
+        (sum, p) => sum + (p.totalProfit || 0),
+        0
+      );
+
+      let activeDays = 0;
+      const paidPurchases = purchases.filter((p) => p.startDate);
+      if (paidPurchases.length > 0) {
+        const earliestStart = paidPurchases.reduce((earliest, p) => {
+          const d = new Date(p.startDate);
+          return d < earliest ? d : earliest;
+        }, new Date(paidPurchases[0].startDate));
+
+        const diffMs = new Date() - earliestStart;
+        activeDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+      }
+
+      setStats({ activeRobots, totalEarned, activeDays });
+    } catch (error) {
+      console.error("Stats fetch error:", error);
+    }
   };
 
   const handleLogout = () => {
@@ -803,7 +1222,9 @@ export default function Profile() {
           }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>AI Robots</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#667eea" }}>0</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#667eea" }}>
+              {stats.activeRobots}
+            </div>
           </div>
 
           <div style={{
@@ -815,7 +1236,9 @@ export default function Profile() {
           }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💰</div>
             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Total Earned</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#059669" }}>₹0</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#059669" }}>
+              ₹{stats.totalEarned}
+            </div>
           </div>
 
           <div style={{
@@ -827,7 +1250,9 @@ export default function Profile() {
           }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>📈</div>
             <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Active Days</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#0891b2" }}>0</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#0891b2" }}>
+              {stats.activeDays}
+            </div>
           </div>
         </div>
       </div>
