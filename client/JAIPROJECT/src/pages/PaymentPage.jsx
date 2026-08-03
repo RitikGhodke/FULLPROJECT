@@ -1554,6 +1554,7 @@ export default function PaymentPage() {
       display: "flex",
       gap: "8px",
       marginBottom: "20px",
+      width: "100%",
     }}
   >
     <input
@@ -1562,17 +1563,21 @@ export default function PaymentPage() {
       readOnly
       style={{
         flex: 1,
+        minWidth: 0,          // 👈 ye fix hai — flex item ko shrink karne deta hai
+        width: "100%",
         padding: "12px",
         border: "1px solid #e2e8f0",
         borderRadius: "8px",
         fontSize: "14px",
         background: "#fff",
+        boxSizing: "border-box",   // 👈 padding included in width
       }}
     />
 
     <button
       onClick={copyUpi}
       style={{
+        flexShrink: 0,        // 👈 button ko squeeze hone se rokta hai
         padding: "0 16px",
         border: "none",
         borderRadius: "8px",
@@ -1580,12 +1585,14 @@ export default function PaymentPage() {
         color: "#fff",
         cursor: "pointer",
         fontWeight: "600",
+        whiteSpace: "nowrap",
       }}
     >
       Copy
     </button>
   </div>
 )}
+
 
         <input
           type="text"
