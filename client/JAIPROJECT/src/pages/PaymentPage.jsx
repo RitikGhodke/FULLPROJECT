@@ -1549,16 +1549,43 @@ export default function PaymentPage() {
 )}
 
         {settings.upiId && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 24 }}>
-            <span style={{ fontWeight: 600, color: "#1e293b" }}>{settings.upiId}</span>
-            <button
-              onClick={copyUpi}
-              style={{ padding: "4px 10px", fontSize: 12, background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 6, cursor: "pointer" }}
-            >
-              Copy
-            </button>
-          </div>
-        )}
+  <div
+    style={{
+      display: "flex",
+      gap: "8px",
+      marginBottom: "20px",
+    }}
+  >
+    <input
+      type="text"
+      value={settings.upiId}
+      readOnly
+      style={{
+        flex: 1,
+        padding: "12px",
+        border: "1px solid #e2e8f0",
+        borderRadius: "8px",
+        fontSize: "14px",
+        background: "#fff",
+      }}
+    />
+
+    <button
+      onClick={copyUpi}
+      style={{
+        padding: "0 16px",
+        border: "none",
+        borderRadius: "8px",
+        background: "#667eea",
+        color: "#fff",
+        cursor: "pointer",
+        fontWeight: "600",
+      }}
+    >
+      Copy
+    </button>
+  </div>
+)}
 
         <input
           type="text"
