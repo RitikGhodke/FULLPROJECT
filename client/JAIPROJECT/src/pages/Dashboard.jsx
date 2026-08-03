@@ -585,6 +585,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 export default function Dashboard() {
@@ -747,8 +748,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Withdrawal Button */}
-        <div style={{ marginBottom: 32 }}>
+       {/* Withdrawal Button */}
+        <div style={{ marginBottom: 32, display: "flex", gap: 16, flexWrap: "wrap" }}>
           <button
             onClick={() => setShowWithdrawalModal(true)}
             style={{
@@ -768,6 +769,24 @@ export default function Dashboard() {
           >
             💰 Withdrawal Request करें
           </button>
+
+          <Link to="/withdrawal-history">
+            <button
+              style={{
+                padding: "16px 32px",
+                background: "#667eea",
+                color: "#fff",
+                border: "none",
+                borderRadius: 12,
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 10px 30px rgba(102,126,234,0.3)"
+              }}
+            >
+              📜 Withdrawal History
+            </button>
+          </Link>
         </div>
 
         {/* Withdrawal Modal */}
