@@ -1235,7 +1235,7 @@ export default function Profile() {
             backdropFilter: "blur(10px)"
           }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>💰</div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Total Earned</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Total Profit</div>
             <div style={{ fontSize: 24, fontWeight: 800, color: "#059669" }}>
               ₹{stats.totalEarned}
             </div>
