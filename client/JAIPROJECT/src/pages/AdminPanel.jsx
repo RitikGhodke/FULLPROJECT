@@ -1149,6 +1149,454 @@
 
 
 
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from "../api";
+
+// const UPLOADS_BASE = API.defaults.baseURL.replace(/\/api\/?$/, ""); // 👈 fix
+
+// export default function AdminPanel() {
+//   const [withdrawals, setWithdrawals] = useState([]);
+//   const [pendingPurchases, setPendingPurchases] = useState([]);
+//   const [settings, setSettings] = useState({ upiId: "", qrImageUrl: "" });
+//   const [upiInput, setUpiInput] = useState("");
+//   const [qrFile, setQrFile] = useState(null);
+//   const [savingSettings, setSavingSettings] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     checkAdminAccess();
+//   }, []);
+
+//   const checkAdminAccess = async () => {
+//     try {
+//       const userEmail = localStorage.getItem("email");
+//       const adminEmails = ["msdhoni5616000016@gmail.com"];
+
+//       if (!adminEmails.includes(userEmail)) {
+//         alert("Access Denied! Admin only.");
+//         navigate("/");
+//         return;
+//       }
+
+//       fetchData();
+//     } catch (error) {
+//       console.error("Error:", error);
+//       navigate("/");
+//     }
+//   };
+
+//   const fetchData = async () => {
+//     try {
+//       const [withdrawalsRes, pendingRes, settingsRes] = await Promise.all([
+//         API.get("/payment/withdrawal-requests"),
+//         API.get("/payment/pending-purchases"),
+//         API.get("/payment/settings"),
+//       ]);
+
+//       setWithdrawals(withdrawalsRes.data.withdrawals || []);
+//       setPendingPurchases(pendingRes.data.pending || []);
+//       setSettings(settingsRes.data);
+//       setUpiInput(settingsRes.data.upiId || "");
+
+//       setLoading(false);
+//     } catch (error) {
+//       console.error("Fetch error:", error);
+//       alert("Failed to load data");
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleRunDistribution = async () => {
+//     if (!window.confirm("Run daily profit distribution for all active purchases?")) return;
+//     try {
+//       await API.post("/admin/run-distribution");
+//       alert("✅ Distribution executed successfully!");
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed to run distribution"));
+//     }
+//   };
+
+//   const handleProcessWithdrawal = async (userId, amount, status) => {
+//     try {
+//       await API.post("/payment/process-withdrawal", {
+//         userId,
+//         amount,
+//         status
+//       });
+
+//       alert(`Withdrawal ${status}!`);
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed"));
+//     }
+//   };
+
+//   const handleSaveSettings = async () => {
+//     try {
+//       setSavingSettings(true);
+//       const formData = new FormData();
+//       formData.append("upiId", upiInput);
+//       if (qrFile) formData.append("qrImage", qrFile);
+
+//       await API.post("/payment/settings", formData, {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       });
+
+//       alert("✅ Payment settings updated!");
+//       setQrFile(null);
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed to update settings"));
+//     } finally {
+//       setSavingSettings(false);
+//     }
+//   };
+
+//   const handleApprovePurchase = async (purchaseId) => {
+//     try {
+//       await API.post("/payment/approve-purchase", { purchaseId });
+//       alert("✅ Purchase approved!");
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Approval failed"));
+//     }
+//   };
+
+//   const handleRejectPurchase = async (purchaseId) => {
+//     if (!window.confirm("Reject this purchase?")) return;
+//     try {
+//       await API.post("/payment/reject-purchase", { purchaseId });
+//       alert("❌ Purchase rejected");
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Rejection failed"));
+//     }
+//   };
+
+//   const getStatusBadge = (status) => {
+//     const styles = {
+//       pending: { bg: "#fef3c7", color: "#92400e", text: "⏳ Pending" },
+//       approved: { bg: "#d1fae5", color: "#065f46", text: "✅ Approved" },
+//       rejected: { bg: "#fee2e2", color: "#991b1b", text: "❌ Rejected" }
+//     };
+//     const style = styles[status] || styles.pending;
+//     return (
+//       <span style={{
+//         background: style.bg,
+//         color: style.color,
+//         padding: "6px 12px",
+//         borderRadius: 20,
+//         fontSize: 13,
+//         fontWeight: 600
+//       }}>
+//         {style.text}
+//       </span>
+//     );
+//   };
+
+//   if (loading) {
+//     return (
+//       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+//         <div style={{ fontSize: 20, color: "#667eea" }}>Loading...</div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div style={{
+//       minHeight: "100vh",
+//       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//       padding: "40px 20px"
+//     }}>
+//       <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+
+//         {/* Header */}
+//         <div style={{
+//           background: "#fff",
+//           padding: 32,
+//           borderRadius: 16,
+//           marginBottom: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h1 style={{ fontSize: 32, fontWeight: 800, color: "#1e293b", marginBottom: 8 }}>
+//             🔐 Admin Panel
+//           </h1>
+//           <p style={{ color: "#64748b", fontSize: 16, marginBottom: 16 }}>
+//             Email: {localStorage.getItem("email")}
+//           </p>
+//           <button
+//             onClick={handleRunDistribution}
+//             style={{
+//               padding: "12px 24px",
+//               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//               color: "#fff",
+//               border: "none",
+//               borderRadius: 8,
+//               cursor: "pointer",
+//               fontWeight: 600,
+//               fontSize: 14
+//             }}
+//           >
+//             🔄 Run Daily Distribution
+//           </button>
+//         </div>
+
+//         {/* Payment Settings (QR + UPI) */}
+//         <div style={{
+//           background: "#fff",
+//           borderRadius: 16,
+//           padding: 24,
+//           marginBottom: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//             🧾 Payment Settings (QR / UPI)
+//           </h2>
+
+//           <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "flex-start" }}>
+//             <div>
+//               <p style={{ fontSize: 13, color: "#64748b", marginBottom: 8 }}>Current QR</p>
+//               {settings.qrImageUrl ? (
+//   <img
+//     src={`${UPLOADS_BASE}${settings.qrImageUrl}`}
+//     alt="Current QR"
+//     style={{ width: 160, height: 160, borderRadius: 8, border: "1px solid #e2e8f0" }}
+//   />
+// ) : (
+//   <div style={{ width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #e2e8f0", borderRadius: 8, color: "#94a3b8", fontSize: 13 }}>
+//     No QR set
+//   </div>
+// )}
+//             </div>
+
+//             <div style={{ flex: 1, minWidth: 260 }}>
+//               <label style={{ display: "block", fontSize: 13, color: "#64748b", marginBottom: 6 }}>
+//                 UPI ID
+//               </label>
+//               <input
+//                 type="text"
+//                 value={upiInput}
+//                 onChange={(e) => setUpiInput(e.target.value)}
+//                 placeholder="example@upi"
+//                 style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: 8, marginBottom: 16, boxSizing: "border-box" }}
+//               />
+
+//               <label style={{ display: "block", fontSize: 13, color: "#64748b", marginBottom: 6 }}>
+//                 Naya QR Image Upload karo
+//               </label>
+//               <input
+//                 type="file"
+//                 accept="image/*"
+//                 onChange={(e) => setQrFile(e.target.files[0])}
+//                 style={{ marginBottom: 16 }}
+//               />
+
+//               <button
+//                 onClick={handleSaveSettings}
+//                 disabled={savingSettings}
+//                 style={{
+//                   padding: "10px 20px",
+//                   background: "#059669",
+//                   color: "#fff",
+//                   border: "none",
+//                   borderRadius: 8,
+//                   cursor: savingSettings ? "not-allowed" : "pointer",
+//                   fontWeight: 600,
+//                   fontSize: 14
+//                 }}
+//               >
+//                 {savingSettings ? "Saving..." : "Save Settings"}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Pending Purchases (UTR verification) */}
+//         <div style={{
+//           background: "#fff",
+//           borderRadius: 16,
+//           padding: 24,
+//           marginBottom: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//             🧐 Pending Purchases ({pendingPurchases.length})
+//           </h2>
+
+//           {pendingPurchases.length === 0 ? (
+//             <p style={{ textAlign: "center", color: "#94a3b8" }}>No pending purchases</p>
+//           ) : (
+//             <div style={{ overflowX: "auto" }}>
+//               <table style={{ width: "100%", borderCollapse: "collapse" }}>
+//                 <thead>
+//                   <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Product</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>UTR</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {pendingPurchases.map((p) => (
+//                     <tr key={p._id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+//                       <td style={{ padding: "16px" }}>
+//                         <div style={{ fontWeight: 600, color: "#1e293b" }}>{p.user?.name}</div>
+//                         <div style={{ fontSize: 12, color: "#64748b" }}>{p.user?.email}</div>
+//                       </td>
+//                       <td style={{ padding: "16px" }}>{p.productName}</td>
+//                       <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+//                         ₹{p.amount}
+//                       </td>
+//                       <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+//                         {p.utrNumber}
+//                       </td>
+//                       <td style={{ padding: "16px" }}>
+//                         <div style={{ display: "flex", gap: 8 }}>
+//                           <button
+//                             onClick={() => handleApprovePurchase(p._id)}
+//                             style={{
+//                               padding: "8px 14px",
+//                               background: "#059669",
+//                               color: "#fff",
+//                               border: "none",
+//                               borderRadius: 6,
+//                               cursor: "pointer",
+//                               fontSize: 12,
+//                               fontWeight: 600
+//                             }}
+//                           >
+//                             Approve
+//                           </button>
+//                           <button
+//                             onClick={() => handleRejectPurchase(p._id)}
+//                             style={{
+//                               padding: "8px 14px",
+//                               background: "#dc2626",
+//                               color: "#fff",
+//                               border: "none",
+//                               borderRadius: 6,
+//                               cursor: "pointer",
+//                               fontSize: 12,
+//                               fontWeight: 600
+//                             }}
+//                           >
+//                             Reject
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Withdrawals Table */}
+//         <div style={{
+//           background: "#fff",
+//           borderRadius: 16,
+//           padding: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//             💰 Withdrawal Requests ({withdrawals.filter(w => w.status === "pending").length} pending)
+//           </h2>
+
+//           {withdrawals.length === 0 ? (
+//             <p style={{ textAlign: "center", color: "#94a3b8" }}>No withdrawal requests</p>
+//           ) : (
+//             <div style={{ overflowX: "auto" }}>
+//               <table style={{ width: "100%", borderCollapse: "collapse" }}>
+//                 <thead>
+//                   <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Account</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>IFSC</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {withdrawals.map((withdrawal, idx) => (
+//                     <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+//                       <td style={{ padding: "16px" }}>
+//                         <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
+//                         <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
+//                       </td>
+//                       <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+//                         ₹{withdrawal.amount}
+//                       </td>
+//                       <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+//                         {withdrawal.bankAccountNumber}
+//                       </td>
+//                       <td style={{ padding: "16px", fontSize: 13, color: "#64748b" }}>
+//                         {withdrawal.ifscCode}
+//                       </td>
+//                       <td style={{ padding: "16px" }}>
+//                         {getStatusBadge(withdrawal.status)}
+//                       </td>
+//                       <td style={{ padding: "16px" }}>
+//                         {withdrawal.status === "pending" && (
+//                           <div style={{ display: "flex", gap: 8 }}>
+//                             <button
+//                               onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
+//                               style={{
+//                                 padding: "8px 14px",
+//                                 background: "#059669",
+//                                 color: "#fff",
+//                                 border: "none",
+//                                 borderRadius: 6,
+//                                 cursor: "pointer",
+//                                 fontSize: 12,
+//                                 fontWeight: 600
+//                               }}
+//                             >
+//                               Approve
+//                             </button>
+//                             <button
+//                               onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
+//                               style={{
+//                                 padding: "8px 14px",
+//                                 background: "#dc2626",
+//                                 color: "#fff",
+//                                 border: "none",
+//                                 borderRadius: 6,
+//                                 cursor: "pointer",
+//                                 fontSize: 12,
+//                                 fontWeight: 600
+//                               }}
+//                             >
+//                               Reject
+//                             </button>
+//                           </div>
+//                         )}
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -1219,11 +1667,11 @@ export default function AdminPanel() {
     }
   };
 
-  const handleProcessWithdrawal = async (userId, amount, status) => {
+  // 👇 CHANGED: ab withdrawalId use ho raha hai (userId/amount ki jagah)
+  const handleProcessWithdrawal = async (withdrawalId, status) => {
     try {
       await API.post("/payment/process-withdrawal", {
-        userId,
-        amount,
+        withdrawalId,
         status
       });
 
@@ -1523,8 +1971,8 @@ export default function AdminPanel() {
                   </tr>
                 </thead>
                 <tbody>
-                  {withdrawals.map((withdrawal, idx) => (
-                    <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                  {withdrawals.map((withdrawal) => (
+                    <tr key={withdrawal._id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "16px" }}>
                         <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
                         <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
@@ -1545,7 +1993,7 @@ export default function AdminPanel() {
                         {withdrawal.status === "pending" && (
                           <div style={{ display: "flex", gap: 8 }}>
                             <button
-                              onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
+                              onClick={() => handleProcessWithdrawal(withdrawal._id, "approved")}
                               style={{
                                 padding: "8px 14px",
                                 background: "#059669",
@@ -1560,7 +2008,7 @@ export default function AdminPanel() {
                               Approve
                             </button>
                             <button
-                              onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
+                              onClick={() => handleProcessWithdrawal(withdrawal._id, "rejected")}
                               style={{
                                 padding: "8px 14px",
                                 background: "#dc2626",

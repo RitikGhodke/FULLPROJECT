@@ -123,6 +123,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import SuccessPage from "./pages/SuccessPage";
 import CancelPage from "./pages/CancelPage";
+import WithdrawalHistory from "./pages/WithdrawalHistory"; 
 
 export default function App() {
   return (
@@ -138,6 +139,7 @@ export default function App() {
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/cancel" element={<CancelPage />} />
+          <Route path="/withdrawal-history" element={<WithdrawalHistory />} />
         </Routes>
       </div>
     </Router>
