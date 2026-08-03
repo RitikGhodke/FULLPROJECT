@@ -585,7 +585,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 export default function Dashboard() {
