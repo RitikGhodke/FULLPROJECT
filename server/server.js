@@ -943,6 +943,7 @@ import authRoutes from "./routes/auth.js";
 import paymentRoutes from "./routes/payment.js";
 import profileRoutes from "./routes/profile.js";
 import adminRoutes from "./routes/admin.js";
+import referralRoutes from "./routes/referral.js";
 
 dotenv.config();
 
@@ -958,6 +959,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/referral", referralRoutes);
 
 // ✅ SIMPLE TEST ROUTE (ERROR FREE)
 app.get("/api/test", (req, res) => {

@@ -18,6 +18,11 @@ const withdrawalSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+        type: {
+      type: String,
+      enum: ["wallet", "referral"],
+      default: "wallet",
+    },
     processedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

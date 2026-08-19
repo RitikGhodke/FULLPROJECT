@@ -170,7 +170,33 @@
 
 //with
 
+// import mongoose from "mongoose";
+
+// const userSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   email: { type: String, unique: true, required: true },
+//   phone: { type: String },
+//   password: { type: String, required: true },
+//   walletBalance: { type: Number, default: 0 },
+//   avatar: { type: String, default: "" },
+  
+//   // ✅ Bank Details
+//   bankAccountNumber: { type: String, default: "" },
+//   ifscCode: { type: String, default: "" },
+//   accountHolderName: { type: String, default: "" },
+//   bankName: { type: String, default: "" },
+  
+// }, { timestamps: true });
+
+// export default mongoose.model("User", userSchema);
+
+
+
+
+
+
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -179,13 +205,24 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   walletBalance: { type: Number, default: 0 },
   avatar: { type: String, default: "" },
-  
-  // ✅ Bank Details
+
   bankAccountNumber: { type: String, default: "" },
   ifscCode: { type: String, default: "" },
   accountHolderName: { type: String, default: "" },
   bankName: { type: String, default: "" },
-  
+
+  // ✅ Referral System
+  referralCode: { type: String, unique: true },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  referralBalance: { type: Number, default: 0 },
+
 }, { timestamps: true });
+
+userSchema.pre("save", function (next) {
+  if (!this.referralCode) {
+    this.referralCode = crypto.randomBytes(4).toString("hex").toUpperCase();
+  }
+  next();
+});
 
 export default mongoose.model("User", userSchema);

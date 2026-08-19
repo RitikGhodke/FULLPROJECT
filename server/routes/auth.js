@@ -395,6 +395,207 @@
 
 
 
+// import express from "express";
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+// import User from "../models/User.js";
+// import { sendOTPEmail, generateOTP } from "../utils/emailService.js";
+
+// const router = express.Router();
+
+// // ✅ Temporary OTP storage
+// const otpStore = new Map();
+
+// // ✅ Send OTP for Registration
+// router.post("/send-otp", async (req, res) => {
+//   try {
+//     const { email, name, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName } = req.body;
+
+//     console.log("🔹 OTP request for:", email);
+
+//     if (!email || !name || !password) {
+//       return res.status(400).json({ message: "Name, email and password required" });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Email already registered" });
+//     }
+
+//     const otp = generateOTP();
+//     const expiresAt = Date.now() + 10 * 60 * 1000;
+
+//     otpStore.set(email, {
+//       otp,
+//       expiresAt,
+//       userData: { name, email, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName }
+//     });
+
+//     const emailSent = await sendOTPEmail(email, otp);
+
+//     if (!emailSent) {
+//       return res.status(500).json({ message: "Failed to send OTP" });
+//     }
+
+//     console.log(`✅ OTP sent to ${email}: ${otp}`);
+
+//     res.json({ 
+//       success: true, 
+//       message: "OTP sent to your email",
+//       email: email 
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Send OTP error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+// // ✅ Verify OTP & Create Account
+// router.post("/verify-otp", async (req, res) => {
+//   try {
+//     const { email, otp } = req.body;
+
+//     console.log("🔹 OTP verification for:", email);
+
+//     if (!email || !otp) {
+//       return res.status(400).json({ message: "Email and OTP required" });
+//     }
+
+//     const storedData = otpStore.get(email);
+
+//     if (!storedData) {
+//       return res.status(400).json({ message: "OTP expired or invalid" });
+//     }
+
+//     if (Date.now() > storedData.expiresAt) {
+//       otpStore.delete(email);
+//       return res.status(400).json({ message: "OTP expired. Request a new one." });
+//     }
+
+//     if (storedData.otp !== otp) {
+//       return res.status(400).json({ message: "Invalid OTP" });
+//     }
+
+//     const { name, email: userEmail, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName } = storedData.userData;
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const newUser = await User.create({
+//       name,
+//       email: userEmail,
+//       phone,
+//       password: hashedPassword,
+//       bankAccountNumber,
+//       ifscCode,
+//       accountHolderName,
+//       bankName
+//     });
+
+//     const token = jwt.sign(
+//       { id: newUser._id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "90d" }
+//     );
+
+//     otpStore.delete(email);
+
+//     console.log("✅ User registered successfully:", email);
+
+//     res.json({
+//       success: true,
+//       token,
+//       user: {
+//         id: newUser._id,
+//         name: newUser.name,
+//         email: newUser.email,
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Verify OTP error:", error);
+//     res.status(500).json({ message: "Verification failed" });
+//   }
+// });
+
+// // ✅ Resend OTP
+// router.post("/resend-otp", async (req, res) => {
+//   try {
+//     const { email } = req.body;
+
+//     const storedData = otpStore.get(email);
+//     if (!storedData) {
+//       return res.status(400).json({ message: "No pending registration found" });
+//     }
+
+//     const newOTP = generateOTP();
+//     const expiresAt = Date.now() + 10 * 60 * 1000;
+
+//     otpStore.set(email, {
+//       ...storedData,
+//       otp: newOTP,
+//       expiresAt
+//     });
+
+//     await sendOTPEmail(email, newOTP);
+
+//     console.log(`✅ OTP resent to ${email}: ${newOTP}`);
+
+//     res.json({ success: true, message: "New OTP sent" });
+
+//   } catch (error) {
+//     console.error("❌ Resend OTP error:", error);
+//     res.status(500).json({ message: "Failed to resend OTP" });
+//   }
+// });
+
+// // ✅ Login
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     console.log("🔹 Login attempt:", email);
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(400).json({ message: "User not found" });
+//     }
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "90d" }
+//     );
+
+//     console.log("✅ Login successful:", email);
+
+//     res.json({
+//       success: true,
+//       token,
+//       user: {
+//         id: user._id,
+//         name: user.name,
+//         email: user.email,
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Login error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -409,7 +610,7 @@ const otpStore = new Map();
 // ✅ Send OTP for Registration
 router.post("/send-otp", async (req, res) => {
   try {
-    const { email, name, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName } = req.body;
+    const { email, name, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName, referralCode } = req.body;
 
     console.log("🔹 OTP request for:", email);
 
@@ -428,7 +629,7 @@ router.post("/send-otp", async (req, res) => {
     otpStore.set(email, {
       otp,
       expiresAt,
-      userData: { name, email, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName }
+      userData: { name, email, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName, referralCode }
     });
 
     const emailSent = await sendOTPEmail(email, otp);
@@ -477,9 +678,16 @@ router.post("/verify-otp", async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
-    const { name, email: userEmail, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName } = storedData.userData;
+    const { name, email: userEmail, phone, password, bankAccountNumber, ifscCode, accountHolderName, bankName, referralCode } = storedData.userData;
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ✅ referral code se referrer dhoondo (agar diya ho)
+    let referredBy = null;
+    if (referralCode && referralCode.trim()) {
+      const referrer = await User.findOne({ referralCode: referralCode.trim().toUpperCase() });
+      if (referrer) referredBy = referrer._id;
+    }
 
     const newUser = await User.create({
       name,
@@ -489,7 +697,8 @@ router.post("/verify-otp", async (req, res) => {
       bankAccountNumber,
       ifscCode,
       accountHolderName,
-      bankName
+      bankName,
+      referredBy   // 👈 add
     });
 
     const token = jwt.sign(

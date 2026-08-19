@@ -1674,10 +1674,49 @@ router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, 
   }
 });
 
+// // ✅ Approve/Reject Withdrawal (ADMIN ONLY)
+// router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     const { withdrawalId, status } = req.body; // 👈 ab id se dhundo, amount/userId se nahi
+
+//     if (!["approved", "rejected"].includes(status)) {
+//       return res.status(400).json({ message: "Invalid status" });
+//     }
+
+//     const withdrawal = await Withdrawal.findOne({ _id: withdrawalId, status: "pending" });
+//     if (!withdrawal) {
+//       return res.status(404).json({ message: "Withdrawal request not found or already processed" });
+//     }
+
+//     // ✅ Agar approve ho raha hai to hi balance deduct karo
+//     if (status === "approved") {
+//       const user = await User.findById(withdrawal.userId);
+//       if (!user || user.walletBalance < withdrawal.amount) {
+//         return res.status(400).json({ message: "User has insufficient balance now" });
+//       }
+//       user.walletBalance -= withdrawal.amount;
+//       await user.save();
+//     }
+
+//     withdrawal.status = status;
+//     withdrawal.processedAt = new Date();
+//     withdrawal.processedBy = req.user._id;
+//     await withdrawal.save();
+
+//     res.json({
+//       success: true,
+//       message: `Withdrawal ${status} successfully`,
+//       withdrawal,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Processing failed" });
+//   }
+// });
+
 // ✅ Approve/Reject Withdrawal (ADMIN ONLY)
 router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { withdrawalId, status } = req.body; // 👈 ab id se dhundo, amount/userId se nahi
+    const { withdrawalId, status } = req.body;
 
     if (!["approved", "rejected"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
@@ -1688,14 +1727,23 @@ router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, 
       return res.status(404).json({ message: "Withdrawal request not found or already processed" });
     }
 
-    // ✅ Agar approve ho raha hai to hi balance deduct karo
-    if (status === "approved") {
-      const user = await User.findById(withdrawal.userId);
-      if (!user || user.walletBalance < withdrawal.amount) {
-        return res.status(400).json({ message: "User has insufficient balance now" });
+    if (withdrawal.type === "referral") {
+      // ✅ Referral withdrawal — balance request time pe hi kat chuka hai
+      if (status === "rejected") {
+        // reject hone pe balance wapas add karo
+        await User.findByIdAndUpdate(withdrawal.userId, { $inc: { referralBalance: withdrawal.amount } });
       }
-      user.walletBalance -= withdrawal.amount;
-      await user.save();
+      // approve pe kuch nahi karna — balance pehle hi kat chuka hai
+    } else {
+      // ✅ Wallet withdrawal — purana wala behavior, sirf approve pe deduct
+      if (status === "approved") {
+        const user = await User.findById(withdrawal.userId);
+        if (!user || user.walletBalance < withdrawal.amount) {
+          return res.status(400).json({ message: "User has insufficient balance now" });
+        }
+        user.walletBalance -= withdrawal.amount;
+        await user.save();
+      }
     }
 
     withdrawal.status = status;
@@ -1712,6 +1760,7 @@ router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, 
     res.status(500).json({ message: "Processing failed" });
   }
 });
+
 
 // ✅ Get logged-in user's own withdrawal history
 router.get("/my-withdrawals", authMiddleware, async (req, res) => {
