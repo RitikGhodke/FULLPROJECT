@@ -894,6 +894,7 @@ export default function AuthPage() {
     ifscCode: "",
     accountHolderName: "",
     bankName: "",
+    referralCode: "",
     otp: ""
   });
   const [loading, setLoading] = useState(false);
@@ -951,7 +952,8 @@ export default function AuthPage() {
         bankAccountNumber: formData.bankAccountNumber,
         ifscCode: formData.ifscCode,
         accountHolderName: formData.accountHolderName,
-        bankName: formData.bankName
+        bankName: formData.bankName,
+        referralCode: formData.referralCode
       });
 
       alert("✅ OTP sent to your email!");
@@ -1085,6 +1087,7 @@ export default function AuthPage() {
                 boxSizing: "border-box"
               }}
             />
+            
             <button
               type="submit"
               disabled={loading}
@@ -1169,6 +1172,23 @@ export default function AuthPage() {
               onChange={handleChange}
               required
               minLength={6}
+              style={{
+                width: "100%",
+                padding: "14px",
+                marginBottom: 16,
+                border: "2px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: 16,
+                boxSizing: "border-box"
+              }}
+            />
+
+             <input
+              type="text"
+              name="referralCode"
+              placeholder="Referral Code (optional)"
+              value={formData.referralCode}
+              onChange={handleChange}
               style={{
                 width: "100%",
                 padding: "14px",
@@ -1387,7 +1407,8 @@ export default function AuthPage() {
                 bankAccountNumber: "", 
                 ifscCode: "", 
                 accountHolderName: "", 
-                bankName: "" 
+                bankName: "" ,
+                referralCode: ""  
               });
             }}
             style={{

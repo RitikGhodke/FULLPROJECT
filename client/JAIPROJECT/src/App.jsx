@@ -124,6 +124,7 @@ import AdminPanel from "./pages/AdminPanel";
 import SuccessPage from "./pages/SuccessPage";
 import CancelPage from "./pages/CancelPage";
 import WithdrawalHistory from "./pages/WithdrawalHistory"; 
+import ReferAndEarn from "./pages/ReferAndEarn";  
 
 export default function App() {
   return (
@@ -140,6 +141,7 @@ export default function App() {
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/cancel" element={<CancelPage />} />
           <Route path="/withdrawal-history" element={<WithdrawalHistory />} />
+          <Route path="/refer-and-earn" element={<ReferAndEarn />} />
         </Routes>
       </div>
     </Router>

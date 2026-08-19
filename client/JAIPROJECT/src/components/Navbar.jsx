@@ -614,7 +614,7 @@ export default function Navbar() {
           <Link to="/" className="navLink" onClick={closeMenu}>🏠 Home</Link>
 
           <a
-            href="https://t.me/+YkEN6s3Hm_oxY2Nl"
+            href="https://t.me/+QAfFaYJsN4hlOWM1"
             target="_blank"
             rel="noopener noreferrer"
             className="navLink"
@@ -629,6 +629,7 @@ export default function Navbar() {
               <Link to="/dashboard" className="navLink" onClick={closeMenu}>📊 Dashboard</Link>
               <Link to="/profile" className="navLink" onClick={closeMenu}>👤 Profile</Link>
               <Link to="/withdrawal-history" className="navLink" onClick={closeMenu}>📜 Withdrawals</Link>
+              <Link to="/refer-and-earn" className="navLink" onClick={closeMenu}>🎁 Refer & Earn</Link>
 
               {isAdmin && (
                 <Link to="/admin" className="navLink" style={{ color: "#dc2626" }} onClick={closeMenu}>
