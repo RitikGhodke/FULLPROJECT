@@ -245,19 +245,60 @@ export default function ReferAndEarn() {
           </div>
         )}
 
-        {/* Direct referrals list */}
+        
+
+
+                {/* Downline — 3 levels */}
         <div className="sectionCard">
-          <h2>👥 Your Direct Referrals</h2>
-          {data.directReferrals.length === 0 ? (
-            <div className="emptyState">Abhi tak koi referral nahi hua</div>
+          <h2>🌳 Your Downline (3 Levels)</h2>
+
+          <h3 style={{ fontSize: 14, color: "#667eea", marginBottom: 8, marginTop: 12 }}>
+            Level 1 ({data.downline.level1.length})
+          </h3>
+          {data.downline.level1.length === 0 ? (
+            <div className="emptyState">Koi nahi</div>
           ) : (
-            data.directReferrals.map((r) => (
-              <div className="rowTile" key={r._id}>
+            data.downline.level1.map((u) => (
+              <div className="rowTile" key={u._id}>
                 <div>
-                  <div className="name">{r.name}</div>
-                  <div className="meta">{r.email}</div>
+                  <div className="name">{u.name}</div>
+                  <div className="meta">{u.email}</div>
                 </div>
-                <div className="meta">{new Date(r.createdAt).toLocaleDateString()}</div>
+                <div className="meta">{new Date(u.createdAt).toLocaleDateString()}</div>
+              </div>
+            ))
+          )}
+
+          <h3 style={{ fontSize: 14, color: "#667eea", marginBottom: 8, marginTop: 20 }}>
+            Level 2 ({data.downline.level2.length})
+          </h3>
+          {data.downline.level2.length === 0 ? (
+            <div className="emptyState">Koi nahi</div>
+          ) : (
+            data.downline.level2.map((u) => (
+              <div className="rowTile" key={u._id}>
+                <div>
+                  <div className="name">{u.name}</div>
+                  <div className="meta">{u.email}</div>
+                </div>
+                <div className="meta">{new Date(u.createdAt).toLocaleDateString()}</div>
+              </div>
+            ))
+          )}
+
+          <h3 style={{ fontSize: 14, color: "#667eea", marginBottom: 8, marginTop: 20 }}>
+            Level 3 ({data.downline.level3.length})
+          </h3>
+          {data.downline.level3.length === 0 ? (
+            <div className="emptyState">Koi nahi</div>
+          ) : (
+            data.downline.level3.map((u) => (
+              <div className="rowTile" key={u._id}>
+                <div>
+                  <div className="name">{u.name}</div>
+                  <div className="meta">{u.email}</div>
+                </div>
+                <div className="meta">{new Date(u.createdAt).toLocaleDateString()}</div>
               </div>
             ))
           )}
