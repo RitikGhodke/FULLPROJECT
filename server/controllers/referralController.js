@@ -4,7 +4,13 @@ import Withdrawal from "../models/Withdrawal.js";
 
 export const getReferralInfo = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).lean();
+    let user = await User.findById(req.user._id); // 👈 .lean() hata diya
+
+    // ✅ purane user ke paas referralCode nahi hai to abhi generate kar do
+    if (!user.referralCode) {
+      await user.save();
+    }
+
     const earnings = await ReferralEarning.find({ earner: user._id })
       .populate("fromUser", "name email")
       .sort({ createdAt: -1 })
