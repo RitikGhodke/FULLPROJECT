@@ -112,6 +112,47 @@
 
 
 
+// import React from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import Navbar from "./components/Navbar";
+// import HomePage from "./pages/HomePage";
+// import AuthPage from "./pages/AuthPage";
+// import ProfilePage from "./pages/ProfilePage";
+// import PaymentPage from "./pages/PaymentPage";
+// import Dashboard from "./pages/Dashboard";
+// import AdminPanel from "./pages/AdminPanel";
+// import SuccessPage from "./pages/SuccessPage";
+// import CancelPage from "./pages/CancelPage";
+// import WithdrawalHistory from "./pages/WithdrawalHistory"; 
+// import ReferAndEarn from "./pages/ReferAndEarn";  
+
+// export default function App() {
+//   return (
+//     <Router>
+//       <Navbar />
+//       <div style={{ minHeight: "calc(100vh - 64px)" }}>
+//         <Routes>
+//           <Route path="/" element={<HomePage />} />
+//           <Route path="/auth" element={<AuthPage />} />
+//           <Route path="/profile" element={<ProfilePage />} />
+//           <Route path="/payment/:id" element={<PaymentPage />} />
+//           <Route path="/dashboard" element={<Dashboard />} />
+//           <Route path="/admin" element={<AdminPanel />} />
+//           <Route path="/success" element={<SuccessPage />} />
+//           <Route path="/cancel" element={<CancelPage />} />
+//           <Route path="/withdrawal-history" element={<WithdrawalHistory />} />
+//           <Route path="/refer-and-earn" element={<ReferAndEarn />} />
+//         </Routes>
+//       </div>
+//     </Router>
+//   );
+// }
+
+
+
+
+
+
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -123,8 +164,8 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import SuccessPage from "./pages/SuccessPage";
 import CancelPage from "./pages/CancelPage";
-import WithdrawalHistory from "./pages/WithdrawalHistory"; 
-import ReferAndEarn from "./pages/ReferAndEarn";  
+import WithdrawalHistory from "./pages/WithdrawalHistory";
+import ReferAndEarn from "./pages/ReferAndEarn";
 
 export default function App() {
   return (
